@@ -11,6 +11,7 @@ export default compose(
   mapProps(
     props => ({
       ...props,
+      fetch: props.teams.fetch,
       teams: props.teams.data
       .sort((a, b) => {
         if (a.rating < b.rating) return 1
@@ -22,7 +23,7 @@ export default compose(
   ),
   lifecycle({
     componentDidMount() {
-      this.props.teams.fetch()
+      this.props.fetch()
     }
   })
 )(Component)
