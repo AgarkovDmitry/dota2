@@ -1,0 +1,19 @@
+{
+  "version": "2.2.1",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "target": "es5",
+    "lib": ["dom", "es2015"],
+    "experimentalDecorators": true,
+    "baseUrl": "src",
+    "jsx": "react",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "dist"
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

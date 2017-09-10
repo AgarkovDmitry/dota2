@@ -1,0 +1,70 @@
+{
+  "extends": [
+    "tslint-eslint-rules"
+  ],
+  "parser": "babel-eslint",
+  "plugins": [
+    "react"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "experimentalDecorators": true,
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "amd": true,
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "object-curly-spacing": [true, "always"],
+    "array-bracket-spacing": [true, "never"],
+    "whitespace": [
+      true, 
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-type",
+      "check-typecast",
+      "check-preblock"
+    ],
+
+    "semicolon": [true, "never"],
+    "quotemark": [true, "single"],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "objects": "never",
+          "arrays": "never",
+          "functions": "never",
+          "typeLiterals": "never"
+        }
+      }
+    ],
+    "accessor-pairs": true,
+
+    "no-var-keyword": true,
+    "no-unused-variable": true,
+    "no-extra-semi": true,
+    "no-trailing-whitespace": true,
+    "no-console": [true],
+    "ban": [true, ["alert"]],
+
+    "dot-notation": true,
+
+    "react/jsx-uses-react": true,
+    "react/self-closing-comp": true,
+    "react/no-deprecated": true,
+    "react/no-danger": true,
+    "react/jsx-uses-vars": true
+  }
+}
