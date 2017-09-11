@@ -11,29 +11,30 @@ interface props{
 
 export default class extends React.Component<props, null>{
   componentDidUpdate() {
-    console.log(this.props)
+    const width = 800
+    const height = 600
+    const margin = { top: 0, left: 0, bottom: 0, right: 0 }
+    const chartWidth = width - (margin.left + margin.right)
+    const chartHeight = height - (margin.top + margin.bottom)
 
-    let width, height
-    let chartWidth, chartHeight
-    let margin
     d3.selectAll('svg').remove()
     let svg = d3.select('#graph').append('svg')
     let chartLayer = svg.append('g').classed('chartLayer', true)
 
     const nodes = this.props.info.singleHeroStats.map(item => ({
-      label: `${this.props.store.getHero(item.heroes[0]).localized_name}-${item.winRate * 100}%-${item.picks}`,
-      r: 16 + 2 * item.picks,
+      label: `${this.props.store.getHero(item.heroes[0]).localized_name}-${item.winRate * 100}%-${item.picks} picks`,
+      r: 18 + 1.5 * item.picks,
       color: item.winRate > 0.5 ? 'green' : 'red',
       id: item.heroes[0],
       src: `https://api.opendota.com${this.props.store.getHero(item.heroes[0]).icon}`
     }))
 
-    const links = this.props.info.pairHeroStats.map(item => ({
+    const links = this.props.info.pairHeroStats.filter(item => item.picks > 1).map(item => ({
       source: nodes.findIndex(node => node.id == item.heroes[0]),
       target: nodes.findIndex(node => node.id == item.heroes[1]),
       color: item.winRate > 0.5 ? 'green' : 'red',
-      width: (2 * item.picks).toFixed(0),
-      label: `${item.winRate}%`
+      width: 1 + (0.8 * item.picks),
+      label: `${item.winRate * 100}% - ${item.picks} picks`
     }))
 
     let data = {
@@ -41,30 +42,19 @@ export default class extends React.Component<props, null>{
       links
     }
 
-    setSize(data)
+    svg.attr('width', width).attr('height', height)
+
+    chartLayer
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
+      .attr('transform', 'translate(' + [margin.left, margin.top] + ')')
+
     drawChart(data)
-
-    function setSize(data) {
-        width = 800
-        height = 600
-
-        margin = { top: 0, left: 0, bottom: 0, right: 0 }
-
-        chartWidth = width - (margin.left + margin.right)
-        chartHeight = height - (margin.top + margin.bottom)
-
-        svg.attr('width', width).attr('height', height)
-
-        chartLayer
-          .attr('width', chartWidth)
-          .attr('height', chartHeight)
-          .attr('transform', 'translate(' + [margin.left, margin.top] + ')')
-    }
 
     function drawChart(data) {
         const simulation = d3.forceSimulation()
           .force('link', d3.forceLink().id(d => d.index))
-          .force('collide',d3.forceCollide(d => d.r + 8).iterations(16))
+          .force('collide', d3.forceCollide(d => d.r + 8).iterations(16))
           .force('charge', d3.forceManyBody())
           .force('center', d3.forceCenter(chartWidth / 2, chartHeight / 2))
           .force('y', d3.forceY(0))
@@ -88,8 +78,8 @@ export default class extends React.Component<props, null>{
           .attr('r', d => d.r)
           .attr('fill', d => 'url(#img' + d.id + ')')
           .attr('stroke', d => d.color)
-          .attr('stroke-width', d => 4)
-          .attr('stroke-opacity', 0.4)
+          .attr('stroke-width', d => 3)
+          .attr('stroke-opacity', 1)
           .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
