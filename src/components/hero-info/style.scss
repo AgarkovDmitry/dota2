@@ -1,0 +1,43 @@
+.container{
+  padding: 5% 5%;
+  background: #333;
+  box-shadow: 0 0 20px rgba(51, 51, 51, 0.75);
+  opacity: 0.85;
+}
+
+.title{
+  color: #f26000;
+  // color: #ededed;
+  text-align: center;
+}
+
+.statContainer{
+  font-size: 1em;
+  display: flex;
+  flex-direction: row;
+  padding: 5px 0;
+  border-bottom: 1px solid #fefefe;
+}
+
+.headContainer{
+  font-size: 1.1em;
+  display: flex;
+  flex-direction: row;
+  padding: 5px 0;
+  border-bottom: 2px solid #f26000;
+}
+
+.statContainer:last-child{
+  border-bottom: 0;
+}
+
+.statTitle{
+  color: #f26000;
+  flex-basis: 40%;
+}
+
+.statValue{
+  color: #fefefe;
+  text-align: center;
+  flex-basis: 15%
+}
