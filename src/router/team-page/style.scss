@@ -21,12 +21,17 @@ body{
 }
 
 .centralContent{
-  flex-basis: 60%
+  flex-basis: 60%;
+  overflow: hidden;
+  flex-direction: column;
+  display: flex;
 }
 
 .centralTitle{
   text-align: center;
-  color: #333
+  color: #333;
+  margin: 5px 5px;
+  flex-basis: 5%;
 }
 
 .rightBar{

@@ -10,7 +10,6 @@ import DevTools from 'mobx-react-devtools'
 // import Header from 'components/others/header'
 // import loading from 'components/others/loader'
 
-import Home from 'components/pages/home-page'
 import Team from 'router/team-page'
 import Teams from 'router/teams-page'
 // const Home = Loadable({
@@ -23,7 +22,6 @@ export default ({ store }) => (
     <Router history={createBrowserHistory()}>
       <div>
         <Switch>
-          <Route exact path='/' component={Home}/>
           <Route path='/teams/:id' component={Team}/>
           <Route path='/teams' component={Teams}/>
         </Switch>

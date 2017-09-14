@@ -14,9 +14,9 @@ export default ({ team, fetchMatches, matchesLength, history }) => (
       <div className={styles.centralContent}>
         <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
         <HeroChart team={team}/>
+        <HeroInfo id={13} key={12} team={team.team_id}/>
       </div>
       <div className={styles.rightBar}>
-        <HeroInfo/>
       </div>
   </div>
   : null

@@ -5,7 +5,7 @@ import { compose, lifecycle, mapProps } from 'recompose'
 import Component from './component'
 
 export default compose(
-  inject('teams', 'heroes', 'matches'),
+  inject('teams', 'heroes', 'matches', 'players'),
   withRouter,
   observer,
   mapProps(
@@ -19,6 +19,7 @@ export default compose(
   lifecycle({
     componentDidMount() {
       this.props.teams.fetch()
+      this.props.players.fetch()
       this.props.heroes.fetch()
       this.props.fetchMatches()
     }

@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import createChart from './chart'
+const styles = require('./style.scss')
 
 interface props{
   info: any
@@ -36,7 +37,7 @@ export default class extends React.Component<props, null>{
 
   render() {
     return (
-      <div id='graph'>
+      <div id='graph' className={styles.container}>
       </div>
     )
   }

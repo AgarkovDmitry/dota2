@@ -5,7 +5,7 @@ export default (matches: Array<any>, heroes: Array<number>, team_id: number) => 
       const picks = match.picks_bans.filter(item => item.team == team && item.is_pick == true)
 
       const werePicked = heroes.reduce(
-        (result, hero) => result && picks.reduce((a, b) => a || b.hero_id == hero, false), 
+        (result, hero) => result && picks.reduce((a, b) => a || b.hero_id == hero, false),
         true
       )
 
