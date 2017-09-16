@@ -28,7 +28,7 @@ class Store {
     data = data.filter(item => item.dire_team_id == this.team_id || item.radiant_team_id == this.team_id)
     if (this.selectedHero) data = data.filter(item => {
       const team = item.dire_team_id == this.team_id ? 1 : 0
-      return item.picks_bans.reduce((res, item) => res || item.team == team && item.is_pick == true && item.hero_id == this.selectedHero, false)
+      return item.picks_bans ? item.picks_bans.reduce((res, item) => res || item.team == team && item.is_pick == true && item.hero_id == this.selectedHero, false) : false
     })
 
     return data
@@ -38,7 +38,7 @@ class Store {
 
   @computed get heroesStats() {
     const team_id = this.team_id
-    const filteredMatches = this.filteredMatches
+    const filteredMatches = this.filteredMatches.filter(item => item.isFetched)
 
     const singleHeroStats = this.heroes.data
     .map(hero => getHeroesStats(filteredMatches, [hero.id], team_id))

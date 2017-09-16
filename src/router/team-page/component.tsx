@@ -29,8 +29,8 @@ class Page extends React.Component<any, any>{
           <LeftBar {...this.props}/>
           <div className={styles.centralContent}>
             <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
-            <HeroChart/>
-            <HeroInfo/>
+            { this.props.store.localStore && <HeroChart/> }
+            { this.props.store.localStore && <HeroInfo/> }
           </div>
           <div className={styles.rightBar}>
           </div>

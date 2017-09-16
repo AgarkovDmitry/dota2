@@ -19,6 +19,7 @@ export default class extends React.Component<props, any>{
 
   componentDidMount() {
     this.simulation = chart.createSimulation()
+    chart.render(this.simulation, this.props.nodes, this.props.links)
   }
 
   shouldComponentUpdate(props) {

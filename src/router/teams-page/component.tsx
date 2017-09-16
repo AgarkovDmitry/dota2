@@ -7,7 +7,7 @@ export default ({ teams, history }) => (
   ? <div>
     {
       teams.map(team => (
-        <div onClick={() => history.push(`/teams/${team.team_id}`)}>
+        <div onClick={() => history.push(`/teams/${team.team_id}`)} key={team.team_id}>
           { team.name } - { team.rating } - { team.wins / (team.wins + team.losses)}%
         </div>
       ))

@@ -6,7 +6,7 @@ import Component from './component'
 const styles = require('./style.scss')
 
 export default compose(
-  inject('store'),
+  inject('store', 'matches'),
   withRouter,
   observer,
   mapProps(

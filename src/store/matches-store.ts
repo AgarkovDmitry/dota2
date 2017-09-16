@@ -12,7 +12,7 @@ class DataStore {
     const offset = this._data.length > 0 ? this._data[this._data.length - 1].match_id : undefined
     api.fetchProMatches(offset).then(res => {
       if (withExtras) {
-        const promises = res
+        const promises = [...res, ...this._data.filter(item => !item.isFetched)]
         .filter(
           ({ radiant_team_id, dire_team_id }) => {
             return team_id ? radiant_team_id == team_id || dire_team_id == team_id : true
