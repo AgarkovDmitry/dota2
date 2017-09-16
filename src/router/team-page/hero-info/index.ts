@@ -7,7 +7,7 @@ import Component from './component'
 export default compose(
   inject('store'),
   withRouter,
-  observer,=
+  observer,
   mapProps(
     ({ store }) => {
       const id = store.localStore.selectedHero
