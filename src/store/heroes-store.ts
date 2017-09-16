@@ -1,4 +1,4 @@
-import { observable, action, computed  } from 'mobx'
+import { observable, action, computed } from 'mobx'
 import api from 'api'
 
 class DataStore {

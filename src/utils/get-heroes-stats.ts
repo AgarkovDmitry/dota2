@@ -10,7 +10,7 @@ export default (matches: Array<any>, heroes: Array<number>, team_id: number) => 
       )
 
       if (werePicked)
-        return { wins: res.wins + +(match.radiant_win != team), matches: [...res.matches, match.match_id]}
+        return { wins: res.wins + +(match.radiant_win != team), matches: [...res.matches, match.match_id] }
       else
         return res
     },

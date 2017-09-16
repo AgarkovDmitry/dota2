@@ -2,9 +2,9 @@ import * as React from 'react'
 
 const styles = require('./style.scss')
 
-export default ({ hero, heroStat, bans, picks, wins }) => (
+export default ({ hero, heroStat, bans, picks, wins, id }) => (
   hero
-  ? <div className={styles.flexContainer}>
+  ? <div className={styles.flexContainer} key={'hero-' + id}>
     <div className={styles.container}>
       <h1 className={styles.title}>{hero.localized_name}</h1>
 

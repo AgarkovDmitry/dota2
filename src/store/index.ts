@@ -1,4 +1,4 @@
-import { createTransformer } from 'mobx'
+import { createTransformer, action } from 'mobx'
 
 import HeroesStore from './heroes-store'
 import LeaguesStore from './leagues-store'
@@ -15,6 +15,7 @@ const filterMatches = (matches, ids) => {
 }
 
 class Store {
+  localStore
   heroes = new HeroesStore()
   leagues = new LeaguesStore()
   matches = new MatchesStore()
@@ -82,10 +83,10 @@ class Store {
     .filter(item => item.length)
     .reduce((a, b) => [...a, ...b], [])
 
-      return {
-        singleHeroStats,
-        pairHeroStats
-      }
+    return {
+      singleHeroStats,
+      pairHeroStats
+    }
   })
 
   getHero = createTransformer((id: number) => {
@@ -95,6 +96,37 @@ class Store {
   getPlayer = createTransformer((id: number) => {
     return this.players.data.find(item => item.account_id == id)
   })
+
+  convertInfo = createTransformer(({ info, selectedHero, selectHero, className }) => {
+    const nodes = info.singleHeroStats.map(item => ({
+      label: `${this.getHero(item.heroes[0]).localized_name}`,
+      r: item.picks > 20 ? 25 : 25 + 0.5 * item.picks,
+      color: item.winRate > 0.5 ? 'green' : 'red',
+      id: item.heroes[0],
+      src: `https://api.opendota.com${this.getHero(item.heroes[0]).icon}`,
+      width: item.heroes[0] == selectedHero ? 4 : 3,
+      array: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI / 8 : 0,
+      offset: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI : 0,
+      class: selectedHero ? className : '',
+      opacity: 1,
+      onClick: () => selectHero(item.heroes[0])
+    }))
+
+    const links = info.pairHeroStats.map(item => ({
+      source: nodes.findIndex(node => node.id == item.heroes[0]),
+      target: nodes.findIndex(node => node.id == item.heroes[1]),
+      color: item.winRate > 0.5 ? 'green' : 'red',
+      width: 3,
+      opacity: item.picks * 0.1,
+      label: `${item.winRate * 100}% - ${item.picks} picks`
+    }))
+
+    return { nodes, links }
+  })
+
+  @action setLocalStore(LocalStore, param) {
+    this.localStore = new LocalStore(param, { matches: this.matches, heroes: this.heroes })
+  }
 }
 
 export default Store

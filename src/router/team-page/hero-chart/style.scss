@@ -1,0 +1,17 @@
+.container{
+  flex-basis: 65%;
+  // margin: 0 auto;
+  // width: 800px;
+}
+
+.selected{
+  stroke-width: 4;
+  stroke-linecap: round;
+  animation: dash 4s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

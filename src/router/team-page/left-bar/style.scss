@@ -1,0 +1,43 @@
+.leftBar{
+  flex-basis: 20%;
+  background-color: #333;
+  flex-direction: column;
+  display: flex;
+}
+
+.fetchContainer{
+  padding: 10%;
+  flex-basis: 15%;
+}
+
+.fetchContainer button{
+  border: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 2em;
+  background-color: #f26000;
+  color: white;
+  font-family: PT_Sans;
+  cursor: pointer;
+}
+
+.filtersContainer{
+  padding: 10%;
+  flex-basis: 75%;
+}
+
+.teamContainer{
+  padding: 10%;
+  flex-basis: 10%;
+}
+
+.teamContainer button {
+  border: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 1.5em;
+  background-color: #f26000;
+  color: white;
+  font-family: PT_Sans;
+  cursor: pointer;
+}

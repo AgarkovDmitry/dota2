@@ -9,10 +9,8 @@ export default compose(
   withRouter,
   observer,
   mapProps(
-    ({ team, store }) => ({
-      info: store.heroesStats(team.team_id),
-      heroes: store.heroes.data,
-      store
+    props => ({
+      ...props
     })
   ),
   observer
