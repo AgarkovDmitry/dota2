@@ -1,7 +1,7 @@
 import * as React from 'react'
 
-import HeroChart from './hero-chart'
-import HeroInfo from './hero-info'
+// import HeroChart from './hero-chart'
+// import HeroInfo from './hero-info'
 import LeftBar from './left-bar'
 
 import LocalStore from './store'
@@ -29,8 +29,12 @@ class Page extends React.Component<any, any>{
           <LeftBar {...this.props}/>
           <div className={styles.centralContent}>
             <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
-            { this.props.store.localStore && <HeroChart/> }
-            { this.props.store.localStore && <HeroInfo/> }
+            <svg className={styles.svgContainer}>
+              <g id='allLink'/>
+              <g id='allNode'/>
+              <defs id='allPattern'/>
+            </svg>
+            {/* <HeroInfo/> */}
           </div>
           <div className={styles.rightBar}>
           </div>

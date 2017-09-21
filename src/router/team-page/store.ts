@@ -1,6 +1,9 @@
-import { observable, action, computed, createTransformer } from 'mobx'
+import { observable, action, computed, createTransformer, autorun } from 'mobx'
 
 import getHeroesStats from 'utils/get-heroes-stats'
+import createChart from 'utils/createChart'
+
+const styles = require('./style.scss')
 
 const filterMatches = (matches, ids) => {
   return matches.filter(match =>
@@ -20,6 +23,11 @@ class Store {
     this.team_id = team_id
     this.matches = matches
     this.heroes = heroes
+
+    autorun(() => {
+      const { nodes, links } = this.convertInfo
+      createChart(nodes, links)
+    })
   }
 
   @computed get filteredMatches() {
@@ -66,7 +74,7 @@ class Store {
     return this.heroes.data.find(item => item.id == id)
   })
 
-  convertInfo = createTransformer((className: string) => {
+  @computed get convertInfo () {
     const info = this.heroesStats
     const selectedHero = this.selectedHero
     const selectHero = this.selectHero
@@ -79,12 +87,12 @@ class Store {
       src: `https://api.opendota.com${this.getHero(item.heroes[0]).icon}`,
       array: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI / 8 : 0,
       offset: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI : 0,
-      class: item.heroes[0] == selectedHero ? className : '',
+      class: item.heroes[0] == selectedHero ? styles.selected : '',
       opacity: 1,
       onClick: () => selectHero(item.heroes[0])
     }))
 
-    const links = info.pairHeroStats.map(item => ({
+    const links = info.pairHeroStats.filter(item => item.picks > 1).map(item => ({
       source: nodes.findIndex(node => node.id == item.heroes[0]),
       target: nodes.findIndex(node => node.id == item.heroes[1]),
       color: item.winRate > 0.5 ? 'green' : 'red',
@@ -94,7 +102,7 @@ class Store {
     }))
 
     return { nodes, links }
-  })
+  }
 }
 
 export default Store
