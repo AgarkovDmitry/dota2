@@ -1,16 +1,10 @@
 import * as d3 from 'd3'
 
-const width = 800
-const height = 600
-const margin = { top: 0, left: 0, bottom: 0, right: 0 }
-const chartWidth = width - (margin.left + margin.right)
-const chartHeight = height - (margin.top + margin.bottom)
-
 let simulation = d3.forceSimulation()
   .force('link', d3.forceLink().id(d => d.index))
   .force('collide', d3.forceCollide(d => d.r + 8).iterations(16))
   .force('charge', d3.forceManyBody())
-  .force('center', d3.forceCenter(chartWidth / 2, chartHeight / 2))
+  .force('center', d3.forceCenter(window.innerWidth * 0.6 / 2, window.innerHeight * 0.8  / 2))
   .force('y', d3.forceY(0))
   .force('x', d3.forceX(0))
 
@@ -113,8 +107,6 @@ function generateLinks (links) {
   const linkG = d3.select('#allLink')
   linkWrap = linkG.selectAll('line').data(links, d => d.id)
 
-  // .select('title')
-  // .text(d => d.label)
   linkWrap.exit().remove()
   let linkWrapEnter = linkWrap.enter()
 
@@ -128,35 +120,37 @@ function generateLinks (links) {
     .attr('stroke', d => d.color)
     .attr('stroke-width', d => d.width)
     .attr('stroke-opacity', d => d.opacity)
-  // .append('title')
-  // .text(d => d.label)
 
   linkWrap = linkWrapEnter.merge(linkWrap)
 }
 
 export default (_nodes, _links) => {
-  const nodes = [..._nodes, {
-    label: 'ghost',
-    r: 0,
-    color: 0,
-    id: id + '-ghost-node',
-    src: '',
-    width: 0,
-    array: 0,
-    offset: 0,
-    class: 'ghost',
-    opacity: 0,
-    onClick: () => {}
-  }]
+  const nodes = [..._nodes,
+    {
+      label: 'ghost',
+      r: 0,
+      color: 0,
+      id: id + '-ghost-node',
+      src: '',
+      width: 0,
+      array: 0,
+      offset: 0,
+      class: 'ghost',
+      opacity: 0,
+      onClick: () => {}
+    }
+  ]
 
-  const links = [..._links, {
-    id: id + '-ghost-line',
-    source: nodes.length - 1,
-    target: nodes.length - 1,
-    color: 'transparent',
-    width: 0,
-    opacity: 0
-  }]
+  const links = [..._links,
+    {
+      id: id + '-ghost-line',
+      source: nodes.length - 1,
+      target: nodes.length - 1,
+      color: 'transparent',
+      width: 0,
+      opacity: 0
+    }
+  ]
 
   id--
 

@@ -6,14 +6,6 @@ import MatchesStore from './matches-store'
 import PlayersStore from './players-store'
 import TeamsStore from './teams-store'
 
-import getHeroesStats from 'utils/get-heroes-stats'
-
-const filterMatches = (matches, ids) => {
-  return matches.filter(match =>
-    ids.reduce((a, b) => a || match.match_id == b, false)
-  )
-}
-
 class Store {
   localStore
   heroes = new HeroesStore()
@@ -64,31 +56,6 @@ class Store {
     }).length
   })
 
-  heroesStats = createTransformer((team_id: number) => {
-    const filteredMatches = this.teamMatches(team_id)
-
-    const singleHeroStats = this.heroes.data
-    .map(hero => getHeroesStats(filteredMatches, [hero.id], team_id))
-    .filter(item => item.picks > 0)
-
-    const pairHeroStats = singleHeroStats
-    .map((singleHero, index) =>
-      singleHeroStats
-      .filter((item, key) => key > index)
-      .map(hero =>
-        getHeroesStats(filterMatches(filteredMatches, singleHero.matches), [...singleHero.heroes, ...hero.heroes], team_id)
-      )
-      .filter(item => item.picks > 0)
-    )
-    .filter(item => item.length)
-    .reduce((a, b) => [...a, ...b], [])
-
-    return {
-      singleHeroStats,
-      pairHeroStats
-    }
-  })
-
   getHero = createTransformer((id: number) => {
     return this.heroes.data.find(item => item.id == id)
   })
@@ -97,32 +64,6 @@ class Store {
     return this.players.data.find(item => item.account_id == id)
   })
 
-  convertInfo = createTransformer(({ info, selectedHero, selectHero, className }) => {
-    const nodes = info.singleHeroStats.map(item => ({
-      label: `${this.getHero(item.heroes[0]).localized_name}`,
-      r: item.picks > 20 ? 25 : 25 + 0.5 * item.picks,
-      color: item.winRate > 0.5 ? 'green' : 'red',
-      id: item.heroes[0],
-      src: `https://api.opendota.com${this.getHero(item.heroes[0]).icon}`,
-      width: item.heroes[0] == selectedHero ? 4 : 3,
-      array: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI / 8 : 0,
-      offset: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI : 0,
-      class: selectedHero ? className : '',
-      opacity: 1,
-      onClick: () => selectHero(item.heroes[0])
-    }))
-
-    const links = info.pairHeroStats.map(item => ({
-      source: nodes.findIndex(node => node.id == item.heroes[0]),
-      target: nodes.findIndex(node => node.id == item.heroes[1]),
-      color: item.winRate > 0.5 ? 'green' : 'red',
-      width: 3,
-      opacity: item.picks * 0.1,
-      label: `${item.winRate * 100}% - ${item.picks} picks`
-    }))
-
-    return { nodes, links }
-  })
 
   @action setLocalStore(LocalStore, param) {
     this.localStore = new LocalStore(param, { matches: this.matches, heroes: this.heroes })

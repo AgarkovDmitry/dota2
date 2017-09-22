@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 // import HeroChart from './hero-chart'
-// import HeroInfo from './hero-info'
+import HeroInfo from './hero-info'
 import LeftBar from './left-bar'
 
 import LocalStore from './store'
@@ -34,10 +34,10 @@ class Page extends React.Component<any, any>{
               <g id='allNode'/>
               <defs id='allPattern'/>
             </svg>
-            {/* <HeroInfo/> */}
           </div>
           <div className={styles.rightBar}>
           </div>
+          <HeroInfo/>
       </div>
       : null
     )

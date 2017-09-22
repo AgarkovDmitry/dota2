@@ -1,15 +1,8 @@
 import { observable, action, computed, createTransformer, autorun } from 'mobx'
 
-import getHeroesStats from 'utils/get-heroes-stats'
 import createChart from 'utils/createChart'
 
 const styles = require('./style.scss')
-
-const filterMatches = (matches, ids) => {
-  return matches.filter(match =>
-    ids.reduce((a, b) => a || match.match_id == b, false)
-  )
-}
 
 class Store {
   @observable heroes: any
@@ -44,29 +37,63 @@ class Store {
 
   @action selectHero = (id) => this.selectedHero = (this.selectedHero == id) ? 0 : id
 
+
   @computed get heroesStats() {
-    const team_id = this.team_id
+    const team = this.team_id
     const filteredMatches = this.filteredMatches.filter(item => item.isFetched)
 
-    const singleHeroStats = this.heroes.data
-    .map(hero => getHeroesStats(filteredMatches, [hero.id], team_id))
-    .filter(item => item.picks > 0)
+    let { nodes, links } = filteredMatches.reduce((res, match) => {
+      const side = match.dire_team_id == team
+      const picks = match.picks_bans.filter(item => item.team == side && item.is_pick == true).sort((a, b) => a.hero_id - b.hero_id)
 
-    const pairHeroStats = singleHeroStats
-    .map((singleHero, index) =>
-      singleHeroStats
-      .filter((item, key) => key > index)
-      .map(hero =>
-        getHeroesStats(filterMatches(filteredMatches, singleHero.matches), [...singleHero.heroes, ...hero.heroes], team_id)
-      )
-      .filter(item => item.picks > 0)
-    )
-    .filter(item => item.length)
-    .reduce((a, b) => [...a, ...b], [])
+      const nodes = picks.map(item => ({ id: item.hero_id, win: +(match.radiant_win != side) }) )
+
+      const links = picks.reduce((res, item, index) => {
+        let arr = picks.filter((pick, key) => key > index).map(pick => ({
+            id: item.hero_id + '-' + pick.hero_id,
+            source: item.hero_id,
+            target: pick.hero_id,
+            win: +(match.radiant_win != team)
+          })
+        )
+
+        return [...res, ...arr]
+      }, [])
+
+      return {
+        nodes: [...res.nodes, ...nodes],
+        links: [...res.links, ...links]
+      }
+    }, {
+      nodes: [],
+      links: []
+    })
+
+    nodes = nodes.reduce((res, item) => {
+      const index = res.findIndex(node => node.id == item.id )
+
+      if (index == -1) return [...res, { ...item, pick: 1 }]
+      else return [
+        ...res.filter((item, key) => key < index),
+        { ...item, win: res[index].win + item.win, pick: res[index].pick + 1 },
+        ...res.filter((item, key) => key > index)
+      ]
+    }, [])
+
+    links = links.reduce((res, item) => {
+      const index = res.findIndex(link => link.id == item.id )
+
+      if (index == -1) return [...res, { ...item, pick: 1 }]
+      else return [
+        ...res.filter((item, key) => key < index),
+        { ...item, win: res[index].win + item.win, pick: res[index].pick + 1 },
+        ...res.filter((item, key) => key > index)
+      ]
+    }, [])
 
     return {
-      singleHeroStats,
-      pairHeroStats
+      nodes,
+      links
     }
   }
 
@@ -79,26 +106,27 @@ class Store {
     const selectedHero = this.selectedHero
     const selectHero = this.selectHero
 
-    const nodes = info.singleHeroStats.map(item => ({
-      label: `${this.getHero(item.heroes[0]).localized_name}`,
-      r: item.picks > 20 ? 25 : 25 + 0.5 * item.picks,
-      color: item.winRate > 0.5 ? 'green' : 'red',
-      id: item.heroes[0],
-      src: `https://api.opendota.com${this.getHero(item.heroes[0]).icon}`,
-      array: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI / 8 : 0,
-      offset: item.heroes[0] == selectedHero ? (item.picks > 20 ? 25 : 25 + 0.5 * item.picks) * Math.PI : 0,
-      class: item.heroes[0] == selectedHero ? styles.selected : '',
+    const nodes = info.nodes.map(item => ({
+      label: `${this.getHero(item.id).localized_name}`,
+      r: item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2),
+      color: item.win / item.pick > 0.5 ? 'green' : 'red',
+      id: item.id,
+      src: `https://api.opendota.com${this.getHero(item.id).icon}`,
+      array: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
+      offset: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
+      class: item.id == selectedHero ? styles.selected : '',
       opacity: 1,
-      onClick: () => selectHero(item.heroes[0])
+      onClick: () => selectHero(item.id)
     }))
 
-    const links = info.pairHeroStats.filter(item => item.picks > 1).map(item => ({
-      source: nodes.findIndex(node => node.id == item.heroes[0]),
-      target: nodes.findIndex(node => node.id == item.heroes[1]),
-      color: item.winRate > 0.5 ? 'green' : 'red',
+    const links = info.links.filter(item => item.pick > 1).map(item => ({
+      id: item.id,
+      source: nodes.findIndex(node => node.id == item.source),
+      target: nodes.findIndex(node => node.id == item.target),
+      color: item.win / item.pick > 0.5 ? 'green' : 'red',
       width: 3,
-      opacity: item.picks * 0.1,
-      label: `${item.winRate * 100}% - ${item.picks} picks`
+      opacity: item.pick * 0.1,
+      label: `${item.win / item.pick * 100}% - ${item.pick} picks`
     }))
 
     return { nodes, links }
