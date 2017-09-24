@@ -8,13 +8,7 @@ import MatchContainer from './match-container'
 const styles = require('./style.scss')
 
 class Page extends React.Component<any, any>{
-  constructor(props) {
-    super(props)
-  }
-
   componentDidMount() {
-    this.props.teams.fetch()
-
     this.props.store.setLocalStore(LocalStore, this.props.match.params.id)
   }
 

@@ -37,10 +37,10 @@ export default ({ hero, heroStat, bans, picks, wins, id }) => (
           </div>
           <div className={styles.statContainer}>
             <div className={styles.statTitle}>All teams</div>
-            <div className={styles.statValue}>{hero.pro_win}</div>
-            <div className={styles.statValue}>{hero.pro_pick}</div>
-            <div className={styles.statValue}>{(100 * hero.pro_win / hero.pro_pick).toFixed(0)}%</div>
-            <div className={styles.statValue}>{hero.pro_ban}</div>
+            <div className={styles.statValue}>{hero.proWins}</div>
+            <div className={styles.statValue}>{hero.proPicks}</div>
+            <div className={styles.statValue}>{(100 * hero.proWins / hero.proPicks).toFixed(0)}%</div>
+            <div className={styles.statValue}>{hero.proBans}</div>
           </div>
         </div>
       </div>

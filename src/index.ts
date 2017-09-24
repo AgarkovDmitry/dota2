@@ -1,7 +1,7 @@
 import { render } from 'react-dom'
 
 import Store from 'store'
-import app from 'components/others/app'
+import app from 'components/app'
 
 declare global {
   interface Window { store: any }

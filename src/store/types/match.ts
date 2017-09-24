@@ -1,12 +1,11 @@
 import { observable, action, computed } from 'mobx'
-import api from 'api'
 
-import Pick = require('typings/pick')
+import Pick from './pick'
 
 export default class {
   id: number
-  duration: number
-  onsetTime: number
+  duration: Date
+  onsetTime: Date
 
   leagueId: number
   leagueName: string
@@ -63,8 +62,8 @@ export default class {
 
   constructor(match) {
     this.id = match.match_id
-    this.duration = match.duration
-    this.onsetTime = match.start_time
+    this.duration = new Date(match.duration * 1000 - 10800000)
+    this.onsetTime = new Date(match.start_time * 1000)
 
     this.leagueId = match.leagueid
     this.leagueName = match.league_name
@@ -92,25 +91,16 @@ export default class {
     this.withExtra = false
   }
 
-  @action async loadExtra () {
-    if (this.withExtra == false) {
-      const match = await api.fetchMatchInfo(this.id)
+  @action async loadExtra (match) {
+    this.firstbloodTime = match.first_blood_time
 
-      this.firstbloodTime = match.first_blood_time
+    this.radiantGoldAdv = match.radiant_gold_adv
+    this.radiantExpAdv = match.radiant_xp_adv
 
-      this.radiantGoldAdv = match.radiant_gold_adv
-      this.radiantExpAdv = match.radiant_xp_adv
+    this.picksbans = match.picks_bans.map(item => new Pick(item, this.direTeam, this.radiantTeam))
+    this.players = match.players
+    this.teamfights = match.teamfights
 
-      this.picksbans = match.picks_bans.map(item => ({
-        isPick: item.is_pick,
-        order: item.order,
-        hero: item.hero_id,
-        team: (item.team) ? this.direTeam : this.radiantTeam
-      }))
-      this.players = match.players
-      this.teamfights = match.teamfights
-
-      this.withExtra = true
-    }
+    this.withExtra = true
   }
 }

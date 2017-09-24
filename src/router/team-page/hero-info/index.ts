@@ -13,7 +13,7 @@ export default compose(
       const id = store.localStore.selectedHero
       const heroStat = store.localStore.heroStat
       return ({
-        hero: store.localStore.data.heroes.getHero(id),
+        hero: store.dataStore.getHero(id),
         heroStat: heroStat,
         picks: heroStat.reduce((res, a) => res + a.picks, 0),
         bans: store.localStore.heroBansAgainstTeam,

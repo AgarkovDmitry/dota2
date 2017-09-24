@@ -9,36 +9,36 @@ export default ({ match, getHero }) => (
       <div>
         {
           match.radiantPicks.map(item => (
-            <img src={`https://api.opendota.com${getHero(item.hero).img}`} width={40} height={22.5} className={styles.imagePick}/>
+            <img src={getHero(item.hero).img} width={40} height={22.5} className={styles.imagePick}/>
           ))
         }
       </div>
       <div>
         {
           match.radiantBans.map(item => (
-            <img src={`https://api.opendota.com${getHero(item.hero).img}`} width={40} height={22.5} className={styles.imageBan}/>
+            <img src={getHero(item.hero).img} width={40} height={22.5} className={styles.imageBan}/>
           ))
         }
       </div>
     </div>
     <div>
       <div>{match.leagueName}</div>
-      <div>{match.duration}</div>
-      <div>{new Date(match.onsetTime * 1000).toLocaleDateString()}</div>
+      <div>{match.duration.toLocaleTimeString()}</div>
+      <div>{match.onsetTime.toLocaleDateString()}</div>
     </div>
     <div className={styles.teamContainer}>
       <div>{match.direTeamName}({match.direScore})</div>
       <div>
         {
           match.direPicks.map(item => (
-            <img src={`https://api.opendota.com${getHero(item.hero).img}`} width={40} height={22.5} className={styles.imagePick}/>
+            <img src={getHero(item.hero).img} width={40} height={22.5} className={styles.imagePick}/>
           ))
         }
       </div>
       <div>
         {
           match.direBans.map(item => (
-            <img src={`https://api.opendota.com${getHero(item.hero).img}`} width={40} height={22.5} className={styles.imageBan}/>
+            <img src={getHero(item.hero).img} width={40} height={22.5} className={styles.imageBan}/>
           ))
         }
       </div>

@@ -10,7 +10,7 @@ export default compose(
     props => ({
       ...props,
       team: props.store.localStore.team,
-      getHero: (id) => props.store.localStore.data.heroes.getHero(id)
+      getHero: (id) => props.store.localStore.data.getHero(id)
     })
   ),
   observer

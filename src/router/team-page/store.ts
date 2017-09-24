@@ -12,21 +12,23 @@ const getWinRateColor = (winRate) => {
   if (winRate <= 1.0) return '#D32CE6'
 }
 
-import Match from 'store/data-store/match'
+import Match from 'store/types/match'
 
 class Store {
   @observable data: any
   team: number
 
-  @observable selectedHero: number = 0
+  @observable selectedHero: number
 
-  constructor(team, { matches, heroes, data }) {
+  constructor(team, data) {
     this.team = team
     this.data = data
+    this.selectedHero = 0
 
-    this.data.matches.loadMatchesWithExtras(5, true, { team: team })
-    this.data.heroes.loadHeroes()
-    this.data.players.loadPlayers()
+    this.data.loadMatchesWithExtras(5, true, { team: team })
+    this.data.loadHeroes()
+    this.data.loadPlayers()
+    this.data.loadTeams()
 
     autorun(() => {
       const { nodes, links } = this.convertInfo
@@ -35,7 +37,7 @@ class Store {
   }
 
   @computed get filteredMatches(): Array<Match> {
-    return this.data.matches.filteredMatches({ team: this.team, loaded: true, heroes: this.selectedHero && [this.selectedHero] })
+    return this.data.getMatches({ team: this.team, loaded: true, heroes: this.selectedHero && [this.selectedHero] })
   }
 
   @action selectHero = (id) => this.selectedHero = (this.selectedHero == id) ? 0 : id
@@ -57,7 +59,7 @@ class Store {
       )
 
       return players.map(item => {
-        const player = this.data.players.getPlayer(item.account_id)
+        const player = this.data.getPlayer(item.account_id)
         return { ...item, ...player, isActual: player.team_id == this.team }
       })
     }
@@ -134,14 +136,14 @@ class Store {
     const info = this.heroesStats
     const selectedHero = this.selectedHero
     const selectHero = this.selectHero
-    const getHero = this.data.heroes.getHero
+    const getHero = this.data.getHero
 
     const nodes = info.nodes.map(item => ({
-      label: `${getHero(item.id).localized_name}`,
+      label: `${getHero(item.id).name}`,
       r: item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2),
       color: getWinRateColor(item.win / item.pick),
       id: item.id,
-      src: `https://api.opendota.com${getHero(item.id).icon}`,
+      src: getHero(item.id).icon,
       array: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
       offset: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
       class: item.id == selectedHero ? styles.selected : '',

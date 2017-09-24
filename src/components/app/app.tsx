@@ -7,9 +7,6 @@ import DevTools from 'mobx-react-devtools'
 
 // const styles = require('./style.less')
 
-// import Header from 'components/others/header'
-// import loading from 'components/others/loader'
-
 import Team from 'router/team-page'
 import Teams from 'router/teams-page'
 // const Home = Loadable({
