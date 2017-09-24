@@ -1,17 +1,16 @@
 import { observer, inject } from 'mobx-react'
-import { withRouter } from 'react-router'
 import { compose, mapProps } from 'recompose'
 
 import Component from './component'
 
 export default compose(
-  inject('teams', 'store'),
-  withRouter,
+  inject('store'),
   observer,
   mapProps(
     props => ({
       ...props,
-      team: props.teams.data.find(item => item.team_id == props.match.params.id)
+      team: props.store.localStore.team,
+      getHero: (id) => props.store.localStore.data.heroes.getHero(id)
     })
   ),
   observer

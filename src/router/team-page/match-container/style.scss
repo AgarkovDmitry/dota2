@@ -1,0 +1,24 @@
+.matchContainer{
+  text-align: center;
+  display: flex;
+  border: 2px solid #e4ae33;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  color: #e4ae33;
+}
+
+.teamContainer{
+  flex-basis: 40%;
+}
+
+.imagePick {
+  width: 32;
+  height: 18;
+}
+
+.imageBan {
+  width: 32;
+  height: 18;
+  filter: grayscale(100%);
+}

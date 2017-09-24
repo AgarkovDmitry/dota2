@@ -11,13 +11,12 @@ export default compose(
   mapProps(
     ({ store }) => {
       const id = store.localStore.selectedHero
-      const team = store.localStore.team_id
-      const heroStat = store.heroStat({ hero_id: id, team_id: team })
+      const heroStat = store.localStore.heroStat
       return ({
-        hero: store.getHero(id),
-        bans: store.heroBansAgainstTeam({ hero_id: id, team_id: team }),
+        hero: store.localStore.data.heroes.getHero(id),
         heroStat: heroStat,
         picks: heroStat.reduce((res, a) => res + a.picks, 0),
+        bans: store.localStore.heroBansAgainstTeam,
         wins: heroStat.reduce((res, a) => res + a.wins, 0),
         id: id
       })

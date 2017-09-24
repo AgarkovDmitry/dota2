@@ -1,21 +1,32 @@
-import { observable, action, computed, createTransformer, autorun } from 'mobx'
+import { observable, action, computed, autorun } from 'mobx'
 
 import createChart from 'utils/createChart'
 
 const styles = require('./style.scss')
 
-class Store {
-  @observable heroes: any
-  @observable matches: any
+const getWinRateColor = (winRate) => {
+  if (winRate <= 0.3) return '#B0C3D9'
+  if (winRate <= 0.5) return '#5E98D9'
+  if (winRate <= 0.7) return '#4B69FF'
+  if (winRate <= 0.9) return '#8847FF'
+  if (winRate <= 1.0) return '#D32CE6'
+}
 
-  team_id: number
+import Match from 'store/data-store/match'
+
+class Store {
+  @observable data: any
+  team: number
 
   @observable selectedHero: number = 0
 
-  constructor(team_id, { matches, heroes }) {
-    this.team_id = team_id
-    this.matches = matches
-    this.heroes = heroes
+  constructor(team, { matches, heroes, data }) {
+    this.team = team
+    this.data = data
+
+    this.data.matches.loadMatchesWithExtras(5, true, { team: team })
+    this.data.heroes.loadHeroes()
+    this.data.players.loadPlayers()
 
     autorun(() => {
       const { nodes, links } = this.convertInfo
@@ -23,37 +34,59 @@ class Store {
     })
   }
 
-  @computed get filteredMatches() {
-    let data = this.matches.data
-
-    data = data.filter(item => item.dire_team_id == this.team_id || item.radiant_team_id == this.team_id)
-    if (this.selectedHero) data = data.filter(item => {
-      const team = item.dire_team_id == this.team_id ? 1 : 0
-      return item.picks_bans ? item.picks_bans.reduce((res, item) => res || item.team == team && item.is_pick == true && item.hero_id == this.selectedHero, false) : false
-    })
-
-    return data
+  @computed get filteredMatches(): Array<Match> {
+    return this.data.matches.filteredMatches({ team: this.team, loaded: true, heroes: this.selectedHero && [this.selectedHero] })
   }
 
   @action selectHero = (id) => this.selectedHero = (this.selectedHero == id) ? 0 : id
 
 
+  @computed get heroStat() {
+    if (this.selectedHero) {
+      let matches = this.filteredMatches
+      let heroStats = matches.map(match => {
+        const player = match.players.find(player => player.hero_id == this.selectedHero)
+        return { account_id: player.account_id, won: match.winnerTeam == this.team }
+      })
+
+      let players = heroStats.reduce((a, b) => a.includes(b.account_id) ? a : [...a, b.account_id], [])
+
+      players = players.map(player => heroStats.reduce((res, hero) =>
+        hero.account_id == player ? { ...res, wins: res.wins + +hero.won, picks: res.picks + 1 } : res,
+        { account_id: player, wins: 0, picks: 0 })
+      )
+
+      return players.map(item => {
+        const player = this.data.players.getPlayer(item.account_id)
+        return { ...item, ...player, isActual: player.team_id == this.team }
+      })
+    }
+    return []
+  }
+
+  @computed get heroBansAgainstTeam () {
+    const hero = this.selectedHero
+    let matches = this.filteredMatches
+
+    return matches.filter(match => {
+      const picks = match.radiantTeam == this.team ? match.radiantBans : match.direBans
+      return picks.reduce((a, b) => a || b.hero == hero, false)
+    }).length
+  }
+
   @computed get heroesStats() {
-    const team = this.team_id
-    const filteredMatches = this.filteredMatches.filter(item => item.isFetched)
+    let { nodes, links } = this.filteredMatches.reduce((res, match) => {
+      const picks = (match.radiantTeam == this.team ? match.radiantPicks : match.direPicks).sort((a, b) => a.hero - b.hero)
+      const win = +(match.winnerTeam == this.team)
 
-    let { nodes, links } = filteredMatches.reduce((res, match) => {
-      const side = match.dire_team_id == team
-      const picks = match.picks_bans.filter(item => item.team == side && item.is_pick == true).sort((a, b) => a.hero_id - b.hero_id)
-
-      const nodes = picks.map(item => ({ id: item.hero_id, win: +(match.radiant_win != side) }) )
+      const nodes = picks.map(item => ({ id: item.hero, win }) )
 
       const links = picks.reduce((res, item, index) => {
         let arr = picks.filter((pick, key) => key > index).map(pick => ({
-            id: item.hero_id + '-' + pick.hero_id,
-            source: item.hero_id,
-            target: pick.hero_id,
-            win: +(match.radiant_win != team)
+            id: item.hero + '-' + pick.hero,
+            source: item.hero,
+            target: pick.hero,
+            win
           })
         )
 
@@ -97,21 +130,18 @@ class Store {
     }
   }
 
-  getHero = createTransformer((id: number) => {
-    return this.heroes.data.find(item => item.id == id)
-  })
-
   @computed get convertInfo () {
     const info = this.heroesStats
     const selectedHero = this.selectedHero
     const selectHero = this.selectHero
+    const getHero = this.data.heroes.getHero
 
     const nodes = info.nodes.map(item => ({
-      label: `${this.getHero(item.id).localized_name}`,
+      label: `${getHero(item.id).localized_name}`,
       r: item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2),
-      color: item.win / item.pick > 0.5 ? 'green' : 'red',
+      color: getWinRateColor(item.win / item.pick),
       id: item.id,
-      src: `https://api.opendota.com${this.getHero(item.id).icon}`,
+      src: `https://api.opendota.com${getHero(item.id).icon}`,
       array: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
       offset: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
       class: item.id == selectedHero ? styles.selected : '',
@@ -123,10 +153,9 @@ class Store {
       id: item.id,
       source: nodes.findIndex(node => node.id == item.source),
       target: nodes.findIndex(node => node.id == item.target),
-      color: item.win / item.pick > 0.5 ? 'green' : 'red',
+      color: getWinRateColor(item.win / item.pick),
       width: 3,
-      opacity: item.pick * 0.1,
-      label: `${item.win / item.pick * 100}% - ${item.pick} picks`
+      opacity: item.pick * 0.2
     }))
 
     return { nodes, links }

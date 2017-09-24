@@ -1,10 +1,10 @@
 import * as React from 'react'
 
-// import HeroChart from './hero-chart'
 import HeroInfo from './hero-info'
 import LeftBar from './left-bar'
 
 import LocalStore from './store'
+import MatchContainer from './match-container'
 const styles = require('./style.scss')
 
 class Page extends React.Component<any, any>{
@@ -14,15 +14,13 @@ class Page extends React.Component<any, any>{
 
   componentDidMount() {
     this.props.teams.fetch()
-    this.props.players.fetch()
-    this.props.heroes.fetch()
-    this.props.fetchMatches()
 
     this.props.store.setLocalStore(LocalStore, this.props.match.params.id)
   }
 
   render() {
     const { team } = this.props
+
     return (
       team
       ? <div className={styles.page}>
@@ -36,6 +34,9 @@ class Page extends React.Component<any, any>{
             </svg>
           </div>
           <div className={styles.rightBar}>
+            { this.props.store.localStore && this.props.store.localStore.filteredMatches.map((match) => (
+              <MatchContainer match={match} key={match.id}/>
+            ))}
           </div>
           <HeroInfo/>
       </div>

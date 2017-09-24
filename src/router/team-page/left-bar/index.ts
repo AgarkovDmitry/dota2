@@ -10,7 +10,8 @@ export default compose(
   observer,
   mapProps(
     props => ({
-      ...props
+      ...props,
+      fetchMatches: () => props.store.dataStore.matches.loadMatchesWithExtras(5, false, { team: props.store.localStore.team })
     })
   ),
   observer

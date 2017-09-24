@@ -7,7 +7,7 @@ export default ({ team, fetchMatches, matchesLength, history }) => (
   ? <div className={styles.leftBar}>
 
       <div className={styles.fetchContainer}>
-        <button onClick={fetchMatches}>
+        <button onClick={(fetchMatches)}>
           <div>Load more matches</div>
           {matchesLength}
         </button>
