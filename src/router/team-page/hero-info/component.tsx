@@ -7,7 +7,7 @@ export default ({ hero, heroStat, bans, picks, wins, id }) => (
     {
       hero &&
       <div className={styles.container}>
-        <h1 className={styles.title}>{hero.localized_name}</h1>
+        <h1 className={styles.title}>{hero.name}</h1>
 
         <div>
           <div className={styles.headContainer}>
