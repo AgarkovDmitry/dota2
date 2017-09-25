@@ -13,7 +13,7 @@ export default compose(
       ...props,
       teams: props.dataStore.teams
       .sort((a, b) => b.rating - a.rating)
-      .filter((item, key) => key < 50)
+      .filter((item, key) => key < 100)
     })
   ),
   observer

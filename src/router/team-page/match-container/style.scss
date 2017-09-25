@@ -1,24 +1,58 @@
-.matchContainer{
+// .matchContainer{
+//   text-align: center;
+//   display: flex;
+//   border: 2px solid #e4ae33;
+//   padding: 5px;
+//   margin: 5px;
+//   border-radius: 5px;
+//   color: #e4ae33;
+// }
+
+// .imagePick {
+//   width: 32;
+//   height: 18;
+// }
+
+// .imageBan {
+//   width: 32;
+//   height: 18;
+//   filter: grayscale(100%);
+// }
+
+$green: #54b628;
+$red: #e0441e;
+
+.match {
+  color: black;
   text-align: center;
-  display: flex;
-  border: 2px solid #e4ae33;
-  padding: 5px;
-  margin: 5px;
+  font-weight: bold;
+  margin: 27px 10px;
+  padding: 10px;
   border-radius: 5px;
-  color: #e4ae33;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.win {
+  @extend .match;
+  background: $green;
+  box-shadow: 0px 0px 10px 3px $green;
+}
+
+.loss {
+  @extend .match;
+  background: $red;
+  box-shadow: 0px 0px 10px 3px $red;
+}
+
+.infoContainer{
+  display: flex;
 }
 
 .teamContainer{
+  flex-basis: 30%;
+}
+
+.titleContainer{
   flex-basis: 40%;
-}
-
-.imagePick {
-  width: 32;
-  height: 18;
-}
-
-.imageBan {
-  width: 32;
-  height: 18;
-  filter: grayscale(100%);
 }

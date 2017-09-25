@@ -9,14 +9,14 @@ const styles = require('./style.scss')
 
 class Page extends React.Component<any, any>{
   componentDidMount() {
-    this.props.store.setLocalStore(LocalStore, this.props.match.params.id)
+    this.props.store.setLocalStore(LocalStore, this.props.id)
   }
 
   render() {
-    const { team } = this.props
+    const { team, store } = this.props
 
     return (
-      team
+      team && store.localStore
       ? <div className={styles.page}>
           <LeftBar {...this.props}/>
           <div className={styles.centralContent}>
@@ -28,9 +28,11 @@ class Page extends React.Component<any, any>{
             </svg>
           </div>
           <div className={styles.rightBar}>
-            { this.props.store.localStore && this.props.store.localStore.filteredMatches.map((match) => (
-              <MatchContainer match={match} key={match.id}/>
-            ))}
+            {
+              this.props.store.localStore.filteredMatches.map((match) => (
+                <MatchContainer match={match} key={match.id}/>
+              ))
+            }
           </div>
           <HeroInfo/>
       </div>

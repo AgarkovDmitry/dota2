@@ -1,9 +1,9 @@
-import { action } from 'mobx'
+import { observable, action } from 'mobx'
 
 import DataStore from './data-store'
 
 class Store {
-  localStore
+  @observable localStore = null
   dataStore = new DataStore()
 
   @action setLocalStore(LocalStore, param) {

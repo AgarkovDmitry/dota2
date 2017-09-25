@@ -1,20 +1,40 @@
 @keyframes append{
   0% { bottom: -400px }
-  100% { bottom: 0px }
+  100% { bottom: 10px }
+}
+
+@keyframes glow{
+  0% {
+		box-shadow: 0 0 5px rgba(228, 174, 51, 0.25);
+  }	
+  100% {
+    box-shadow: 0 0 20px rgba(228, 174, 51, 0.75);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px 0 rgba(228, 174, 51, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 5px 10px rgba(228, 174, 51, 0);
+  }
+  100% {
+    box-shadow: 0 0 5px 0 rgba(228, 174, 51, 0);
+  }
 }
 
 .container{
   padding: 5px 10px;
   background: #333;
-  box-shadow: 0 0 20px rgba(228, 174, 51, 0.75);
-  border: 2px solid #e4ae33;
   border-radius: 10px;
+  animation: pulse 2s infinite;
 }
 
 .title{
   color: #E4AE33;
   margin: 5px;
-  // color: #ededed;
+  letter-spacing: 2px;
   text-align: center;
 }
 
@@ -31,7 +51,8 @@
   display: flex;
   flex-direction: row;
   padding: 5px 0;
-  border-bottom: 2px solid #f26000;
+  border-bottom: 2px solid #e4ae33;
+  font-weight: bold;
 }
 
 .statContainer:last-child{
@@ -39,7 +60,7 @@
 }
 
 .statTitle{
-  color: #f26000;
+  color: #e4ae33;
   flex-basis: 40%;
 }
 
@@ -53,6 +74,6 @@
   position: absolute;
   left: 35%;
   width: 30%;
-  bottom: 0px;
+  bottom: 10px;
   animation: append 0.5s;
 }

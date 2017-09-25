@@ -9,9 +9,12 @@ export default compose(
   withRouter,
   observer,
   mapProps(
-    props => ({
-      ...props,
-      fetchMatches: () => props.store.dataStore.loadMatchesWithExtras(5, false, { team: props.store.localStore.team })
+    ({ store, history, team }) => ({
+      loading: store.dataStore.loadingMatches,
+      matchesLength: store.localStore.filteredMatches.length,
+      fetchMatches: () => store.dataStore.loadMatchesWithExtras(5, false, { team: store.localStore.team }),
+      team,
+      history
     })
   ),
   observer

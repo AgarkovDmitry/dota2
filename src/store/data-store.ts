@@ -14,7 +14,7 @@ class Store {
   @observable teams: Array<Team> = []
 
   @observable matches: Array<Match> = []
-  @observable loadingMatches: boolean = false
+  @observable loadingMatches: boolean = true
 
   @action async loadHeroes () {
     const res = !this.heroes.length ? await api.fetchHeroes() : []
@@ -45,7 +45,7 @@ class Store {
   @action async loadMatches (count: number = 5, fromStart: boolean = true) {
     const matchesCount = this.matches.length
     const resCount = fromStart ? count - matchesCount / 100 : count
-    this.loadingMatches = false
+    this.loadingMatches = true
 
     let res = []
     for (let i = 0; i < resCount; i++) {
@@ -60,7 +60,7 @@ class Store {
     }
 
     this.matches.push(...res.map(match => new Match(match)))
-    this.loadingMatches = true
+    this.loadingMatches = false
   }
 
   @action async loadMatchExtra (id: number) {

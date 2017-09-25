@@ -5,11 +5,16 @@ import createChart from 'utils/createChart'
 const styles = require('./style.scss')
 
 const getWinRateColor = (winRate) => {
-  if (winRate <= 0.3) return '#B0C3D9'
-  if (winRate <= 0.5) return '#5E98D9'
-  if (winRate <= 0.7) return '#4B69FF'
-  if (winRate <= 0.9) return '#8847FF'
-  if (winRate <= 1.0) return '#D32CE6'
+  if (winRate <= 0.1) return '#FF0000'
+  if (winRate <= 0.2) return '#FB3700'
+  if (winRate <= 0.3) return '#F76D00'
+  if (winRate <= 0.4) return '#F3A200'
+  if (winRate <= 0.5) return '#EFD500'
+  if (winRate <= 0.6) return '#D1EC00'
+  if (winRate <= 0.7) return '#9AE800'
+  if (winRate <= 0.8) return '#65E400'
+  if (winRate <= 0.9) return '#31E000'
+  if (winRate <= 1.0) return '#00DD00'
 }
 
 import Match from 'store/types/match'
@@ -146,7 +151,7 @@ class Store {
       src: getHero(item.id).icon,
       array: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
       offset: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
-      class: item.id == selectedHero ? styles.selected : '',
+      class: item.id == selectedHero ? styles.selectedHero : styles.hero,
       opacity: 1,
       onClick: () => selectHero(item.id)
     }))

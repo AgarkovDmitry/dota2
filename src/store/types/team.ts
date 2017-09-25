@@ -6,6 +6,7 @@ export default class {
   name: string
   wins: number
   losses: number
+  rating: number
 
   @computed get winRate() {
     return (this.wins * 100 / (this.wins + this.losses)).toFixed(2)
@@ -17,5 +18,6 @@ export default class {
     this.name = team.name
     this.wins = team.wins
     this.losses = team.losses
+    this.rating = team.rating
   }
 }

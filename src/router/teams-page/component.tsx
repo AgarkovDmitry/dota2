@@ -16,7 +16,7 @@ export default class extends React.Component<any, any>{
         {
           teams.map(team => (
             <div onClick={() => history.push(`/teams/${team.id}`)} key={team.id}>
-              { team.name } - { team.rating } - { team.wins / (team.wins + team.losses)}%
+              { team.name } - { team.rating } - { team.winRate }%
             </div>
           ))
         }

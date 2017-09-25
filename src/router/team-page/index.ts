@@ -9,9 +9,10 @@ export default compose(
   withRouter,
   observer,
   mapProps(
-    props => ({
-      ...props,
-      team: props.store.dataStore.getTeam(props.match.params.id)
+    ({ store, match }) => ({
+      team: store.dataStore.getTeam(match.params.id),
+      id: match.params.id,
+      store
     })
   ),
   observer
