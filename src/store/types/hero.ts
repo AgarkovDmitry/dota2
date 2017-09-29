@@ -1,4 +1,4 @@
-// import { computed } from 'mobx'
+import { computed } from 'mobx'
 
 export default class {
   id: number
@@ -50,6 +50,10 @@ export default class {
   // projectile_speed: number
   // roles: Array<string>
   // turn_rate: number
+
+  @computed get proWinRate(): number {
+    return parseInt((100 * this.proWins / this.proPicks).toFixed(0))
+  }
 
   constructor(hero) {
     this.id = hero.hero_id

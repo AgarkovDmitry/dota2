@@ -1,6 +1,7 @@
 import { observable, action, computed } from 'mobx'
 
 import Pick from './pick'
+import Team from './team'
 
 export default class {
   id: number
@@ -13,13 +14,13 @@ export default class {
   direScore: number
   radiantScore: number
 
-  direTeam: number
-  radiantTeam: number
+  direTeam: number | Team
+  radiantTeam: number | Team
 
   direTeamName: number
   radiantTeamName: number
 
-  winnerTeam: number
+  winnerTeam: number | Team
 
   @observable firstbloodTime: number
 
@@ -28,32 +29,32 @@ export default class {
 
   @observable picksbans: Array<Pick>
   @observable players: any
-  @observable teamfights: any
+  // @observable teamfights: any
 
   @observable withExtra: boolean
 
-  @computed get radiantPicks() {
+  @computed get radiantPicks(): Array<Pick> {
     if (this.picksbans)
       return this.picksbans.filter(item => item.isPick && item.team == this.radiantTeam)
     else
       return []
   }
 
-  @computed get radiantBans() {
+  @computed get radiantBans(): Array<Pick> {
     if (this.picksbans)
       return this.picksbans.filter(item => !item.isPick && item.team == this.radiantTeam)
     else
       return []
   }
 
-  @computed get direPicks() {
+  @computed get direPicks(): Array<Pick> {
     if (this.picksbans)
       return this.picksbans.filter(item => item.isPick && item.team == this.direTeam)
     else
       return []
   }
 
-  @computed get direBans() {
+  @computed get direBans(): Array<Pick> {
     if (this.picksbans)
       return this.picksbans.filter(item => !item.isPick && item.team == this.direTeam)
     else
@@ -86,7 +87,7 @@ export default class {
 
     this.picksbans = null
     this.players = null
-    this.teamfights = null
+    // this.teamfights = null
 
     this.withExtra = false
   }
@@ -99,7 +100,7 @@ export default class {
 
     this.picksbans = match.picks_bans.map(item => new Pick(item, this.direTeam, this.radiantTeam))
     this.players = match.players
-    this.teamfights = match.teamfights
+    // this.teamfights = match.teamfights
 
     this.withExtra = true
   }

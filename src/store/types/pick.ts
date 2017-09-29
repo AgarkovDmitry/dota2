@@ -1,5 +1,7 @@
+// import Hero from './hero'
+// import Team from './team'
 
-export default class {
+export default class Pick{
   isPick: boolean
   order: number
   hero: number

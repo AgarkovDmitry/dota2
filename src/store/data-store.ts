@@ -80,7 +80,7 @@ class Store {
   }
 
   getHero = createTransformer((id: number): Hero => {
-    return this.heroes.find(item => item.id == id)
+    return id ? this.heroes.find(item => item.id == id) : null
   })
 
   getLeague = createTransformer((id: number): League => {
@@ -115,7 +115,7 @@ class Store {
     if (loaded) {
       data = data.filter(item => item.withExtra == loaded)
 
-      if (heroes) {
+      if (heroes && heroes.length > 0) {
         data = data.filter(match => {
           const werePickedByRadiant = heroes.reduce(
             (result, hero) => result && match.radiantPicks.reduce((a, b) => a || b.hero == hero, false),

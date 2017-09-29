@@ -1,21 +1,8 @@
 import { observable, action, computed, autorun } from 'mobx'
 
-import createChart from 'utils/createChart'
+import D3Team from 'utils/d3-team'
 
 const styles = require('./style.scss')
-
-const getWinRateColor = (winRate) => {
-  if (winRate <= 0.1) return '#FF0000'
-  if (winRate <= 0.2) return '#FB3700'
-  if (winRate <= 0.3) return '#F76D00'
-  if (winRate <= 0.4) return '#F3A200'
-  if (winRate <= 0.5) return '#EFD500'
-  if (winRate <= 0.6) return '#D1EC00'
-  if (winRate <= 0.7) return '#9AE800'
-  if (winRate <= 0.8) return '#65E400'
-  if (winRate <= 0.9) return '#31E000'
-  if (winRate <= 1.0) return '#00DD00'
-}
 
 import Match from 'store/types/match'
 
@@ -23,12 +10,14 @@ class Store {
   @observable data: any
   team: number
 
-  @observable selectedHero: number
+  @observable selectedHeroes: Array<number>
+  D3Team: D3Team
 
   constructor(team, data) {
     this.team = team
     this.data = data
-    this.selectedHero = 0
+    this.selectedHeroes = []
+    this.D3Team = new D3Team()
 
     this.data.loadMatchesWithExtras(5, true, { team: team })
     this.data.loadHeroes()
@@ -36,49 +25,24 @@ class Store {
     this.data.loadTeams()
 
     autorun(() => {
-      const { nodes, links } = this.convertInfo
-      createChart(nodes, links)
+      this.D3Team.render({
+        info: this.heroesStats,
+        selectedHeroes: this.selectedHeroes,
+        selectHero: this.selectHero,
+        getHero: this.data.getHero,
+        styles
+      })
     })
   }
 
   @computed get filteredMatches(): Array<Match> {
-    return this.data.getMatches({ team: this.team, loaded: true, heroes: this.selectedHero && [this.selectedHero] })
+    return this.data.getMatches({ team: this.team, loaded: true, heroes: this.selectedHeroes })
   }
 
-  @action selectHero = (id) => this.selectedHero = (this.selectedHero == id) ? 0 : id
-
-
-  @computed get heroStat() {
-    if (this.selectedHero) {
-      let matches = this.filteredMatches
-      let heroStats = matches.map(match => {
-        const player = match.players.find(player => player.hero_id == this.selectedHero)
-        return { account_id: player.account_id, won: match.winnerTeam == this.team }
-      })
-
-      let players = heroStats.reduce((a, b) => a.includes(b.account_id) ? a : [...a, b.account_id], [])
-
-      players = players.map(player => heroStats.reduce((res, hero) =>
-        hero.account_id == player ? { ...res, wins: res.wins + +hero.won, picks: res.picks + 1 } : res,
-        { account_id: player, wins: 0, picks: 0 })
-      )
-
-      return players.map(item => {
-        const player = this.data.getPlayer(item.account_id)
-        return { ...item, ...player, isActual: player.team_id == this.team }
-      })
-    }
-    return []
-  }
-
-  @computed get heroBansAgainstTeam () {
-    const hero = this.selectedHero
-    let matches = this.filteredMatches
-
-    return matches.filter(match => {
-      const picks = match.radiantTeam == this.team ? match.radiantBans : match.direBans
-      return picks.reduce((a, b) => a || b.hero == hero, false)
-    }).length
+  @action selectHero = (id) => {
+    this.selectedHeroes.includes(id)
+    ? this.selectedHeroes = this.selectedHeroes.filter(item => item != id)
+    : this.selectedHeroes.push(id)
   }
 
   @computed get heroesStats() {
@@ -135,37 +99,6 @@ class Store {
       nodes,
       links
     }
-  }
-
-  @computed get convertInfo () {
-    const info = this.heroesStats
-    const selectedHero = this.selectedHero
-    const selectHero = this.selectHero
-    const getHero = this.data.getHero
-
-    const nodes = info.nodes.map(item => ({
-      label: `${getHero(item.id).name}`,
-      r: item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2),
-      color: getWinRateColor(item.win / item.pick),
-      id: item.id,
-      src: getHero(item.id).icon,
-      array: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
-      offset: item.id == selectedHero ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
-      class: item.id == selectedHero ? styles.selectedHero : styles.hero,
-      opacity: 1,
-      onClick: () => selectHero(item.id)
-    }))
-
-    const links = info.links.filter(item => item.pick > 1).map(item => ({
-      id: item.id,
-      source: nodes.findIndex(node => node.id == item.source),
-      target: nodes.findIndex(node => node.id == item.target),
-      color: getWinRateColor(item.win / item.pick),
-      width: 3,
-      opacity: item.pick * 0.2
-    }))
-
-    return { nodes, links }
   }
 }
 
