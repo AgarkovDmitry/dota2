@@ -37,17 +37,17 @@ export default class HeroInfo extends React.Component<any, any>{
     let matches = this.localStore.filteredMatches
 
     return matches.filter(match => {
-      const picks = match.radiantTeam == this.localStore.team ? match.direBans : match.radiantBans
-      return picks.reduce((res, a) => res || a.hero == hero, false)
+      const picks = match.radiantTeam.id == this.localStore.team ? match.direBans : match.radiantBans
+      return picks.reduce((res, a) => res || a.hero.id == hero.id, false)
     }).length
   }
 
   @computed get heroStat() {
-    if (this.localStore.selectedHeroes[0]) {
+    if (this.hero) {
       let matches = this.localStore.filteredMatches
       let heroStats = matches.map(match => {
-        const player = match.players.find(player => player.hero_id == this.localStore.selectedHeroes[0])
-        return { account_id: player.account_id, won: match.winnerTeam == this.localStore.team }
+        const player = match.players.find(player => player.hero_id == this.localStore.selectedHeroes[0].id)
+        return { account_id: player.account_id, won: match.winnerTeam.id == this.localStore.team }
       })
 
       let players = heroStats.reduce((a, b) => a.includes(b.account_id) ? a : [...a, b.account_id], [])
@@ -59,43 +59,118 @@ export default class HeroInfo extends React.Component<any, any>{
 
       return players.map(item => {
         const player = this.data.getPlayer(item.account_id)
-        return { ...item, ...player, isActual: player.team == this.localStore.team }
+        return { ...item, ...player, isActual: player.team.id == this.localStore.team }
       })
     }
     return []
   }
 
   @computed get hero(): Hero {
-    return this.localStore.selectedHeroes.length == 1 ? this.data.getHero(this.localStore.selectedHeroes[0]) : null
+    return this.localStore.selectedHeroes.length == 1 ? this.localStore.selectedHeroes[0] : null
   }
 
   render () {
     return (
-      <div className={styles.heroContainer} key={'hero-' + this.localStore.selectedHeroes[0]}>
+      <div>
       {
         this.hero &&
-        <div className={styles.container}>
-          <h1 className={styles.title}>{this.hero.name}</h1>
-
-          <div>
-            <div className={styles.headContainer}>
-              <div className={styles.statTitle}>Player</div>
-              <div className={styles.statValue}>Wins</div>
-              <div className={styles.statValue}>Picks</div>
-              <div className={styles.statValue}>WR</div>
-              <div className={styles.statValue}>Bans</div>
-            </div>
-            {
-              this.heroStat.map(stat => (
-                <div className={styles.statContainer} key={stat.account_id}>
-                  <div className={styles.statTitle}>{stat.name}</div>
-                  <div className={styles.statValue}>{stat.wins}</div>
-                  <div className={styles.statValue}>{stat.picks}</div>
-                  <div className={styles.statValue}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
+        <div className={styles.mainContainer}>
+          <div className={styles.container}>
+            <div>
+              <h1 className={styles.title}>{this.hero.name}</h1>
+              <div className={styles.imageWrapper}>
+                <img src={this.hero.img}/>
+                <div className={styles.imageText}>
+                {
+                  this.heroStat.map(stat => (
+                    <div className={styles.statContainer} key={stat.account_id}>
+                      <div className={styles.playerName}>{stat.name}</div>
+                      <div className={styles.playerResult}>{stat.wins} / {stat.picks}</div>
+                      <div className={styles.playerResult}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
+                    </div>
+                  ))
+                }
+                <div className={styles.statContainer}>
+                  <div className={styles.statTitle}>Team</div>
+                  <div className={styles.statBigValue}>{this.wins} / {this.picks}</div>
+                  <div className={styles.statValue}>{this.winRate}%</div>
+                  <div className={styles.statValue}>{this.bans}</div>
                 </div>
-              ))
-            }
+                <div className={styles.statContainer}>
+                  <div className={styles.statTitle}>General</div>
+                  <div className={styles.statBigValue}>{this.hero.proWins} / {this.hero.proPicks}</div>
+                  <div className={styles.statValue}>{this.hero.proWinRate}%</div>
+                  <div className={styles.statValue}>{this.hero.proBans}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+      </div>
+    )
+  }
+}
 
+/*
+this.localStore.selectedHeroes.length > 0
+      ? <div className={styles.mainContainer}>
+        <div className={styles.subcontainer}>
+          <div className={styles.leftHeroesContainer}>
+          {
+            this.localStore.selectedHeroes
+            .filter((item, key) => !(key % 2))
+            .map((hero, key) => (
+              <div key={key} className={styles.heroContainer}>
+                <img src={hero.img} height={54} width={96} className={styles.heroImage}/>
+              </div>
+            ))
+          }
+          </div>
+          <div className={styles.contentContainer}>
+            { 100 * this.localStore.filteredMatches.reduce((res, item) => res + +(item.winnerTeam.id == this.localStore.team), 0) / this.localStore.filteredMatches.length }%
+            (
+              { this.localStore.filteredMatches.reduce((res, item) => res + +(item.winnerTeam.id == this.localStore.team), 0)}
+              /
+              { this.localStore.filteredMatches.length }
+            )
+          </div>
+          <div className={styles.rightHeroesContainer}>
+          {
+            this.localStore.selectedHeroes
+            .filter((item, key) => key % 2)
+            .map((hero, key) => (
+              <div key={key} className={styles.heroContainer}>
+                <img src={hero.img} height={54} width={96} className={styles.heroImage}/>
+              </div>
+            ))
+          }
+          </div>
+        </div>
+      </div>
+      : null
+        /* this.hero &&
+        <div className={styles.container}>
+          <div>
+            <h1 className={styles.title}>{this.hero.name}</h1>
+            <div className={styles.imageWrapper}>
+              <img src={this.hero.img}/>
+              <div className={styles.imageText}>
+              {
+                this.heroStat.map(stat => (
+                  <div className={styles.statContainer} key={stat.account_id}>
+                    <div className={styles.playerName}>{stat.name}</div>
+                    <div className={styles.playerResult}>{stat.wins} / {stat.picks}</div>
+                    <div className={styles.playerResult}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
+                  </div>
+                ))
+              }
+              </div>
+            </div>
+          </div> */
+
+          /* <div className={styles.stats}>
             <div className={styles.statContainer}>
               <div className={styles.statTitle}>Team</div>
               <div className={styles.statValue}>{this.wins}</div>
@@ -110,10 +185,6 @@ export default class HeroInfo extends React.Component<any, any>{
               <div className={styles.statValue}>{this.hero.proWinRate}%</div>
               <div className={styles.statValue}>{this.hero.proBans}</div>
             </div>
-          </div>
-        </div>
-      }
-    </div>
-    )
-  }
-}
+          </div> 
+         </div> 
+*/

@@ -1,0 +1,73 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #333;
+  color: #e4ae33;
+}
+
+.team {
+  display: block;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.team:hover{
+  background-color: #e4ae33;
+  color: #333;
+  font-weight: 700;
+}
+
+.teams {
+  margin-top: 0px;
+  padding: 5px;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.teams::-webkit-scrollbar {
+  width: 9px;
+}
+
+.teams::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5); 
+  border-radius: 10px;
+}
+
+.teams::-webkit-scrollbar-thumb {
+  border-radius: 50px;
+  box-shadow: inset 0 0 9px rgba(0, 0, 0, 1);
+  background-color: #E4AE33
+}
+
+.searchBox {
+  margin: 5px 20px;
+  padding: 5px 30px;
+  font-size: 1.5em;
+  background-color: #333;
+  color: #e4ae33;
+  border: 2px solid #e4ae33;
+  font-family: PT_Sans;
+  border-radius: 30px;
+  height: 40px;
+  outline: none;
+}
+
+.button {
+  margin: 10px 130px;
+  font-size: 1.5em;
+  background-color: #e4ae33;
+  color: #333;
+  border: 2px solid #e4ae33;
+  font-family: PT_Sans;
+  cursor: pointer;
+  border-radius: 30px;
+  height: 40px;
+  outline: none;
+  transition: all 0.5s ease;
+}
+
+.button:hover{
+  background-color: #333;
+  color: #e4ae33;
+}

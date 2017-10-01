@@ -28,7 +28,7 @@ class Store {
 
   @action async loadPlayers () {
     const res = !this.players.length ? await api.fetchPlayers() : []
-    this.players.push(...res.map(item => new Player(item)))
+    this.players.push(...res.map(item => new Player(item, this.getTeam)))
   }
 
   @action async loadTeams () {
@@ -59,7 +59,13 @@ class Store {
       res = [...res, ...tempRes]
     }
 
-    this.matches.push(...res.map(match => new Match(match)))
+    this.matches.push(
+      ...res
+        .filter(item => item.radiant_team_id && item.dire_team_id)
+        .filter(item => this.getTeam(item.radiant_team_id) && this.getTeam(item.dire_team_id))
+        .map(match => new Match(match, this.getLeague, this.getTeam))
+    )
+
     this.loadingMatches = false
   }
 
@@ -67,7 +73,7 @@ class Store {
     const matches = this.matches.filter((item) => item.id == id && !item.withExtra)
     matches.map(async(match) => {
       const res = await api.fetchMatchInfo(match.id)
-      match.loadExtra(res)
+      match.loadExtra(res, this.getHero)
     })
   }
 
@@ -75,7 +81,7 @@ class Store {
     const matches = this.matches.filter((item) => ids.includes(item.id) && !item.withExtra)
     matches.map(async(match) => {
       const res = await api.fetchMatchInfo(match.id)
-      match.loadExtra(res)
+      match.loadExtra(res, this.getHero)
     })
   }
 
@@ -97,15 +103,15 @@ class Store {
 
   getMatches = createTransformer((filters: any): Array<Match> => {
     const { loaded, league, team, side, rival, duration, matches, heroes } = filters
-    let data = this.matches
+    let data: Array<Match> = this.matches
 
-    if (league) data = data.filter(item => item.leagueId == league)
+    if (league) data = data.filter(item => item.league.id == league)
 
     if (team) {
       if (side) data = data.filter(item => item[side] == team)
-      else data = data.filter(item => item.radiantTeam == team || item.direTeam == team)
+      else data = data.filter(item => item.radiantTeam.id == team || item.direTeam.id == team)
 
-      if (rival) data = data.filter(item => item.radiantTeam == rival || item.direTeam == rival)
+      if (rival) data = data.filter(item => item.radiantTeam.id == rival || item.direTeam.id == rival)
     }
 
     if (duration) data = data.filter(item => item.duration >= duration.min && item.duration < duration.max)
@@ -118,15 +124,15 @@ class Store {
       if (heroes && heroes.length > 0) {
         data = data.filter(match => {
           const werePickedByRadiant = heroes.reduce(
-            (result, hero) => result && match.radiantPicks.reduce((a, b) => a || b.hero == hero, false),
+            (result, hero) => result && match.radiantPicks.reduce((a, b) => a || b.hero.id == hero.id, false),
             true
           )
           const werePickedByDire = heroes.reduce(
-            (result, hero) => result && match.direPicks.reduce((a, b) => a || b.hero == hero, false),
+            (result, hero) => result && match.direPicks.reduce((a, b) => a || b.hero.id == hero.id, false),
             true
           )
 
-          if (team) return match.radiantTeam == team ? werePickedByRadiant : werePickedByDire
+          if (team) return match.radiantTeam.id == team ? werePickedByRadiant : werePickedByDire
 
           return werePickedByRadiant || werePickedByDire
         })

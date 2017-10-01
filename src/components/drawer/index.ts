@@ -1,11 +1,8 @@
-import { observer, inject } from 'mobx-react'
-import { withRouter } from 'react-router'
+import { observer } from 'mobx-react'
 import { compose } from 'recompose'
 
 import Component from './component'
 
 export default compose(
-  withRouter,
-  inject('store'),
   observer
 )(Component)

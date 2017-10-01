@@ -5,38 +5,53 @@
 }
 
 .fetchContainer{
-  padding: 10%;
-  flex-basis: 15%;
+  padding: 5%;
+  flex-basis: 7.5%;
 }
 
-.fetchContainer button{
-  border: 0;
-  width: 100%;
-  height: 100%;
-  font-size: 2em;
-  background-color: #f26000;
-  color: white;
-  font-family: PT_Sans;
-  cursor: pointer;
-}
+// .fetchContainer button{
+//   border: 0;
+//   width: 100%;
+//   height: 100%;
+//   font-size: 2em;
+//   background-color: #f26000;
+//   color: white;
+//   font-family: PT_Sans;
+//   cursor: pointer;
+// }
 
 .filtersContainer{
-  padding: 10%;
-  flex-basis: 75%;
+  padding: 5%;
+  flex-basis: 85%;
 }
 
 .teamContainer{
-  padding: 10%;
-  flex-basis: 10%;
+  padding: 5%;
+  flex-basis: 7.5%;
 }
 
-.teamContainer button {
-  border: 0;
+.teamsButton {
   width: 100%;
   height: 100%;
   font-size: 1.5em;
-  background-color: #f26000;
-  color: white;
   font-family: PT_Sans;
+  font-size: 1.5em;
+  background-color: #e4ae33;
+  color: #333;
+  border: 2px solid #e4ae33;
   cursor: pointer;
+  border-radius: 40px;
+  outline: none;
+  transition: all 0.5s ease;
+}
+
+.teamsButton:hover{
+  background-color: #333;
+  color: #e4ae33;
+}
+
+.teamsButton:disabled{
+  background-color: #333;
+  color: #e4ae33;
+  cursor: default;
 }

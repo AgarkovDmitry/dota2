@@ -1,4 +1,5 @@
 // import { computed } from 'mobx'
+import Team from './team'
 
 export default class {
   id: number
@@ -11,15 +12,15 @@ export default class {
   name: string
   // profileurl: string
 
-  team: number
+  team: Team
 
-  constructor(player) {
+  constructor(player, getTeam) {
     this.id = player.account_id
     this.avatar = player.avatar
     this.avatarfull = player.avatarfull
     this.avatarmedium = player.avatarmedium
     this.countryCode = player.countryCode
     this.name = player.name
-    this.team = player.team
+    this.team = getTeam(player.team_id)
   }
 }

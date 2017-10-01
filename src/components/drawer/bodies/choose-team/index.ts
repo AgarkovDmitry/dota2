@@ -9,18 +9,16 @@ export default compose(
   withRouter,
   observer,
   mapProps(
-    ({ store, history, team }) => ({
-      loading: store.dataStore.loadingMatches,
-      matchesLength: store.localStore.filteredMatches.length,
-      fetchMatches: () => store.dataStore.loadMatchesWithExtras(5, false, { team: store.localStore.team }),
+    ({ store, history, close }) => ({
       teams: store.dataStore.teams
         .sort((a, b) => b.rating - a.rating)
         .filter((item, key) => key < 100),
-      team,
       chooseTeam: (team) => {
-        store.localStore.setTeam(team.id)
+        close()
         history.push(`/teams/${team.id}`)
-      }
+        store.localStore.setTeam(team.id)
+      },
+      close
     })
   ),
   observer

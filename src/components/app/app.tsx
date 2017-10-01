@@ -8,7 +8,6 @@ import DevTools from 'mobx-react-devtools'
 // const styles = require('./style.less')
 
 import Team from 'router/team-page'
-import Teams from 'router/teams-page'
 // const Home = Loadable({
 //   loader: () => import('components/pages/home-page'),
 //   loading
@@ -20,7 +19,6 @@ export default ({ store }) => (
       <div>
         <Switch>
           <Route path='/teams/:id' component={Team}/>
-          <Route path='/teams' component={Teams}/>
         </Switch>
         <DevTools />
       </div>

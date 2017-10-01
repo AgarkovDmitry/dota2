@@ -21,9 +21,10 @@ export default class D3Team {
   defsWrap
   linkWrap
 
-  drag
+  nodes
+  links
 
-  ghostId: number
+  drag
 
   constructor () {
     this.simulation = d3.forceSimulation()
@@ -51,7 +52,8 @@ export default class D3Team {
       d.fy = null
     }
 
-    this.ghostId = -1
+    this.nodes = []
+    this.links = []
 
     this.drag = d3.drag()
       .on('start', dragstarted)
@@ -60,13 +62,31 @@ export default class D3Team {
   }
 
   generateNodes (nodes) {
-    const nodeG = d3.select('#allNode')
-    this.nodeWrap = nodeG.selectAll('circle').data(nodes, d => d.id)
+    this.nodeWrap = d3.select('#allNode').selectAll('g').data(this.nodes, d => d.id)
+
+    this.nodeWrap
+      .select('circle')
+      .attr('r', d => d.r)
+      .attr('fill', d => 'url(#img' + d.id + ')')
+      .attr('stroke', d => d.color)
+      .attr('stroke-width', 3)
+      .attr('stroke-opacity', d => d.opacity)
+      .attr('stroke-dasharray', d => d.array)
+      .attr('stroke-dashoffset', d => d.offset)
+      .attr('class', d => d.class)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .on('click', d => d.onClick())
+      .call(this.drag)
+      .select('title')
+      .text(d => d.label)
 
     this.nodeWrap.exit().remove()
+
     const nodeWrapEnter = this.nodeWrap.enter()
 
     nodeWrapEnter
+      .append('g')
       .append('circle')
       .attr('r', d => d.r)
       .attr('fill', d => 'url(#img' + d.id + ')')
@@ -79,22 +99,6 @@ export default class D3Team {
       .on('click', d => d.onClick())
       .call(this.drag)
       .append('title')
-      .text(d => d.label)
-
-    this.nodeWrap
-      .attr('r', d => d.r)
-      .attr('fill', d => 'url(#img' + d.id + ')')
-      .attr('stroke', d => d.color)
-      .attr('stroke-width', 3)
-      .attr('stroke-opacity', d => d.opacity)
-      .attr('stroke-dasharray', d => d.array)
-      .attr('stroke-dashoffset', d => d.offset)
-      .attr('class', d => d.class)
-      // .attr('cx', d => d.x)
-      // .attr('cy', d => d.y)
-      .on('click', d => d.onClick())
-      .call(this.drag)
-      .select('title')
       .text(d => d.label)
 
       this.nodeWrap = nodeWrapEnter.merge(this.nodeWrap)
@@ -126,19 +130,21 @@ export default class D3Team {
   }
 
   generateLinks (links) {
-    const linkG = d3.select('#allLink')
-    this.linkWrap = linkG.selectAll('line').data(links, d => d.id)
+    this.linkWrap = d3.select('#allLink').selectAll('g').data(links, d => d.id)
 
-    this.linkWrap.exit().remove()
-    let linkWrapEnter = this.linkWrap.enter()
-
-    linkWrapEnter
-      .append('line')
+    this.linkWrap
+      .select('line')
       .attr('stroke', d => d.color)
       .attr('stroke-width', d => d.width)
       .attr('stroke-opacity', d => d.opacity)
 
-    this.linkWrap
+    this.linkWrap.exit().remove()
+
+    let linkWrapEnter = this.linkWrap.enter()
+
+    linkWrapEnter
+      .append('g')
+      .append('line')
       .attr('stroke', d => d.color)
       .attr('stroke-width', d => d.width)
       .attr('stroke-opacity', d => d.opacity)
@@ -149,10 +155,10 @@ export default class D3Team {
   tick = () => {
     this.linkWrap
     .selectAll('line')
-    .attr('x1', d => d.source.x)
-    .attr('y1', d => d.source.y)
-    .attr('x2', d => d.target.x)
-    .attr('y2', d => d.target.y)
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y)
 
     this.nodeWrap
       .selectAll('circle')
@@ -160,54 +166,56 @@ export default class D3Team {
       .attr('cy', d => d.y)
   }
 
-  convertInfo = createTransformer(({ info, selectedHeroes, selectHero, getHero, styles }) => {
+  convertInfo = createTransformer(({ info, selectedHeroes, selectHero, styles }) => {
     const nodes = info.nodes.map(item => ({
-      label: `${getHero(item.id).name}`,
-      r: item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2),
+      label: `${item.hero.name}`,
+      r: item.pick > 20 ? 35 : 25 + Math.ceil(item.pick / 2),
       color: getWinRateColor(item.win / item.pick),
-      id: item.id,
-      src: getHero(item.id).icon,
-      array: selectedHeroes.includes(item.id) ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
-      offset: selectedHeroes.includes(item.id) ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
-      class: selectedHeroes.includes(item.id) ? styles.selectedHero : styles.hero,
+      id: item.hero.id,
+      src: item.hero.icon,
+      array: selectedHeroes.find(hero => hero.id == item.hero.id) ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI / 8 : 0,
+      offset: selectedHeroes.find(hero => hero.id == item.hero.id)  ? (item.pick > 20 ? 25 : 25 + Math.ceil(item.pick / 2)) * Math.PI : 0,
+      class: selectedHeroes.find(hero => hero.id == item.hero.id)  ? styles.selectedHero : styles.hero,
       opacity: 1,
-      onClick: () => selectHero(item.id)
+      onClick: () => selectHero(item.hero)
     }))
 
-    nodes.push({
-      label: 'ghost',
-      r: 0,
-      color: 0,
-      id: this.ghostId + '-ghost-node',
-      src: '',
-      width: 0,
-      array: 0,
-      offset: 0,
-      class: 'ghost',
-      opacity: 0,
-      onClick: () => {}
-    })
+
+
+    // for (let i = 0; i < this.nodes.length; i++) {
+    //   const index = nodes.findIndex(node => node.id == this.nodes[i].id)
+    //   if (index == -1) {
+    //     this.nodes.splice(i, 1)
+    //     i--
+    //   }
+
+    //   else {
+    //     this.nodes[i].r = nodes[index].r
+    //     this.nodes[i].color = nodes[index].color
+    //     this.nodes[i].array = nodes[index].array
+    //     this.nodes[i].offset = nodes[index].offset
+    //     this.nodes[i].class = nodes[index].class
+    //   }
+    // }
+
+    // nodes.map(node => {
+    //   const index = this.nodes.findIndex(item => item.id == node.id)
+    //   if (index == -1) this.nodes.push(node)
+    // })
+
+    this.nodes = nodes
 
     const links = info.links
       .filter(item => item.pick > 1)
       .filter(item => !selectedHeroes.includes(item.source) && !selectedHeroes.includes(item.target))
       .map(item => ({
         id: item.id,
-        source: nodes.findIndex(node => node.id == item.source),
-        target: nodes.findIndex(node => node.id == item.target),
+        source: this.nodes.findIndex(node => node.id == item.source.id),
+        target: this.nodes.findIndex(node => node.id == item.target.id),
         color: getWinRateColor(item.win / item.pick),
         width: 3,
         opacity: item.pick * 0.2
       }))
-
-    links.push({
-      id: this.ghostId + '-ghost-line',
-      source: nodes.length - 1,
-      target: nodes.length - 1,
-      color: 'transparent',
-      width: 0,
-      opacity: 0
-    })
 
     return { nodes, links }
   })
@@ -215,12 +223,9 @@ export default class D3Team {
   render (props) {
     const { nodes, links } = this.convertInfo(props)
 
-    this.ghostId = this.ghostId - 1
-
     this.generateLinks(links)
-    this.generateDefs(nodes)
+    this.generateDefs(this.nodes)
     this.generateNodes(nodes)
-
 
     this.simulation
       .nodes(nodes)

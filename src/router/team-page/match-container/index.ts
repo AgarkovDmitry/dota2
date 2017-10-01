@@ -9,8 +9,7 @@ export default compose(
   mapProps(
     props => ({
       ...props,
-      team: props.store.localStore.team,
-      getHero: (id) => props.store.localStore.data.getHero(id)
+      team: props.store.localStore.team
     })
   ),
   observer
