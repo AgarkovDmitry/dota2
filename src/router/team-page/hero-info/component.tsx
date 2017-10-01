@@ -71,43 +71,37 @@ export default class HeroInfo extends React.Component<any, any>{
 
   render () {
     return (
-      <div>
-      {
-        this.hero &&
-        <div className={styles.mainContainer}>
-          <div className={styles.container}>
-            <div>
-              <h1 className={styles.title}>{this.hero.name}</h1>
-              <div className={styles.imageWrapper}>
-                <img src={this.hero.img}/>
-                <div className={styles.imageText}>
-                {
-                  this.heroStat.map(stat => (
-                    <div className={styles.statContainer} key={stat.account_id}>
-                      <div className={styles.playerName}>{stat.name}</div>
-                      <div className={styles.playerResult}>{stat.wins} / {stat.picks}</div>
-                      <div className={styles.playerResult}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
-                    </div>
-                  ))
-                }
-                <div className={styles.statContainer}>
-                  <div className={styles.statTitle}>Team</div>
-                  <div className={styles.statBigValue}>{this.wins} / {this.picks}</div>
-                  <div className={styles.statValue}>{this.winRate}%</div>
-                  <div className={styles.statValue}>{this.bans}</div>
+      this.hero &&
+      <div className={styles.mainContainer}>
+        <div className={styles.container}>
+          <div>
+            <h1 className={styles.title}>{this.hero.name}</h1>
+            <img src={this.hero.img}/>
+          </div>
+          <div className={styles.statsContainer}>
+            {
+              this.heroStat.map(stat => (
+                <div className={styles.statContainer} key={stat.account_id}>
+                  <div className={styles.playerName}>{stat.name}</div>
+                  <div className={styles.playerWins}>{stat.wins} / {stat.picks}</div>
+                  <div className={styles.playerPercent}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
                 </div>
-                <div className={styles.statContainer}>
-                  <div className={styles.statTitle}>General</div>
-                  <div className={styles.statBigValue}>{this.hero.proWins} / {this.hero.proPicks}</div>
-                  <div className={styles.statValue}>{this.hero.proWinRate}%</div>
-                  <div className={styles.statValue}>{this.hero.proBans}</div>
-                </div>
-              </div>
+              ))
+            }
+            <div className={styles.statContainer}>
+              <div className={styles.statTitle}>Team</div>
+              <div className={styles.statBigValue}>{this.wins} / {this.picks}</div>
+              <div className={styles.statValue}>{this.winRate}%</div>
+              <div className={styles.statValue}>{this.bans}</div>
+            </div>
+            <div className={styles.statContainer}>
+              <div className={styles.statTitle}>General</div>
+              <div className={styles.statBigValue}>{this.hero.proWins} / {this.hero.proPicks}</div>
+              <div className={styles.statValue}>{this.hero.proWinRate}%</div>
+              <div className={styles.statValue}>{this.hero.proBans}</div>
             </div>
           </div>
         </div>
-      </div>
-      }
       </div>
     )
   }

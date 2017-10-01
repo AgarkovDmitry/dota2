@@ -30,6 +30,12 @@
   text-align: center;
 }
 
+.statsContainer{
+  flex-direction: column;
+  width: 100%;
+  padding: 15px;
+}
+
 .statContainer{
   font-size: 1em;
   display: flex;
@@ -96,12 +102,21 @@
 }
 
 .playerName {
-  flex-basis: 50%
+  flex-basis: 40%;
+  font-weight: 700;
+  color: #e4ae33;
 }
 
-.playerResult {
-  flex-basis: 25%;
-  color: #ddd;
+.playerWins {
+  flex-basis: 30%;
+  color: #fefefe;
+  text-align: center;
+}
+
+.playerPercent {
+  flex-basis: 15%;
+  color: #fefefe;
+  text-align: center;
 }
 
 .imageWrapper:hover .imageText {

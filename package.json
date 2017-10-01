@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "postinstall": "webpack -p --config webpack.prod.config.js"
+    "postinstall": "webpack -p --config webpack.prod.js"
   },
   "author": "Aharkov D.",
   "license": "ISC",
@@ -19,7 +19,6 @@
     "body-parser": "^1.17.2",
     "css-loader": "^0.28.4",
     "d3": "^4.10.2",
-    "d3-force": "^1.0.6",
     "express": "^4.15.3",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.1",
@@ -38,7 +37,7 @@
     "react-router": "^4.1.1",
     "react-transition-group": "^2.2.0",
     "react-vis-force": "^0.3.1",
-    "recompose": "^0.25.0",
+    "recompose": "^0.25.1",
     "sass-loader": "^6.0.5",
     "style-loader": "^0.18.1",
     "typescript": "^2.5.3",

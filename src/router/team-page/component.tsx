@@ -7,7 +7,7 @@ import LocalStore from './store'
 import MatchContainer from './match-container'
 const styles = require('./style.scss')
 
-class Page extends React.Component<any, any>{
+class Page extends React.Component<any, null>{
   componentDidMount() {
     this.props.store.setLocalStore(LocalStore, this.props.id)
   }
