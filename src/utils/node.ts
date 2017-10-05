@@ -43,8 +43,8 @@ export default class Node {
 
   @computed get r() { return this.picks > 20 ? 35 : 25 + Math.ceil(this.picks / 2) }
   @computed get color() { return getWinRateColor(this.winRate) }
-  @computed get array() { return this.selected ? (this.picks > 20 ? 35 : 25 + Math.ceil(this.picks / 2)) * Math.PI / 8 : 0 }
-  @computed get offset() { return this.selected ? (this.picks > 20 ? 35 : 25 + Math.ceil(this.picks / 2)) * Math.PI : 0 }
+  @computed get array() { return this.selected ? this.r * Math.PI / 8 : 0 }
+  @computed get offset() { return this.selected ? this.r * Math.PI : 0 }
   @computed get class() { return this.selected ? this.styles.selectedHero : this.styles.hero }
 
   @action removeOldMatches = (matches: Array<Match>) => {

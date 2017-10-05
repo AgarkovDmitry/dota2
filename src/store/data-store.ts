@@ -72,14 +72,14 @@ class Store {
     const matches = this.matches.filter((item) => item.id == id && !item.withExtra)
     matches.map(async(match) => {
       const res = await api.fetchMatchInfo(match.id)
-      match.loadExtra(res, this.getHero)
+      match.loadExtra(res, this.getHero, this.getPlayer)
     })
   }
 
   @action async loadMatchesExtra (ids: Array<number>) {
     const matches = this.matches.filter((item) => ids.includes(item.id) && !item.withExtra)
     const responces = await Promise.all(matches.map(match => api.fetchMatchInfo(match.id)))
-    responces.map(responce => this.getMatch(responce.match_id).loadExtra(responce, this.getHero))
+    responces.map(responce => this.getMatch(responce.match_id).loadExtra(responce, this.getHero, this.getPlayer))
   }
 
   getHero = createTransformer((id: number): Hero => {

@@ -87,13 +87,17 @@ export default class {
 
   }
 
-  @action async loadExtra (match, getHero) {
+  @action async loadExtra (match, getHero, getPlayer) {
     // this.firstbloodTime = match.first_blood_time
 
     // this.radiantGoldAdv = match.radiant_gold_adv
     // this.radiantExpAdv = match.radiant_xp_adv
 
-    this.picksbans = match.picks_bans.map(item => new Pick(item, getHero, this.direTeam, this.radiantTeam))
+    this.picksbans = match.picks_bans.map(item =>
+      new Pick(item, getHero, getPlayer, this.direTeam, this.radiantTeam, match.players.find(player =>
+        player.hero_id == item.hero_id
+      ))
+    )
     this.players = match.players
     // this.teamfights = match.teamfights
 

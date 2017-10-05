@@ -16,6 +16,8 @@ export default class D3Team {
   nodes: Array<Node>
   links: Array<Link>
 
+  outfilteredLinks: Array<Link>
+
   drag
 
   constructor () {
@@ -46,6 +48,7 @@ export default class D3Team {
 
     this.nodes = []
     this.links = []
+    this.outfilteredLinks = []
     this.matches = []
 
     this.drag = d3.drag()
@@ -59,13 +62,18 @@ export default class D3Team {
 
     this.nodeWrap
       .select('circle')
-      .attr('r', (node: Node) => node.r)
-      .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
-      .attr('stroke', (node: Node) => node.color)
-      .attr('stroke-width', 3)
       .attr('stroke-dasharray', (node: Node) => node.array)
       .attr('stroke-dashoffset', (node: Node) => node.offset)
       .attr('class', (node: Node) => node.class)
+      .transition()
+        .duration(750)
+        .attr('r', (node: Node) => node.r)
+        .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
+        .attr('stroke', (node: Node) => node.color)
+
+    this.nodeWrap
+      .selectAll('g')
+      .select('circle')
       .on('click', (node: Node) => node.click(node.hero))
       .call(this.drag)
       .select('title')
@@ -80,16 +88,22 @@ export default class D3Team {
     nodeWrapEnter
       .append('g')
       .append('circle')
-      .attr('r', (node: Node) => node.r)
-      .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
-      .attr('stroke', (node: Node) => node.color)
-      .attr('stroke-width', 3)
-      .attr('stroke-dasharray', (node: Node) => node.array)
-      .attr('stroke-dashoffset', (node: Node) => node.offset)
-      .attr('class', (node: Node) => node.class)
+      .transition()
+        .duration(750)
+        .attr('r', (node: Node) => node.r)
+        .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
+        .attr('stroke', (node: Node) => node.color)
+        .attr('stroke-width', 3)
+        .attr('stroke-dasharray', (node: Node) => node.array)
+        .attr('stroke-dashoffset', (node: Node) => node.offset)
+        .attr('class', (node: Node) => node.class)
+
+    nodeWrapEnter
+      .selectAll('g')
+      .select('circle')
       .on('click', (node: Node) => node.click(node.hero))
       .call(this.drag)
-      .select('title')
+      .append('title')
       .text((node: Node) => node.name)
 
       this.nodeWrap = nodeWrapEnter.merge(this.nodeWrap)
@@ -102,8 +116,10 @@ export default class D3Team {
       .attr('id', (node: Node) => 'img' + node.hero.id).attr('width', 1).attr('height', 1)
       .select('image')
       .attr('xlink:href', (node: Node) => node.icon)
-      .attr('x', (node: Node) => node.r - 16)
-      .attr('y', (node: Node) => node.r - 16)
+      .transition()
+        .duration(750)
+        .attr('x', (node: Node) => node.r - 16)
+        .attr('y', (node: Node) => node.r - 16)
 
     this.defsWrap.exit().remove()
     let defsWrapEnter = this.defsWrap.enter()
@@ -113,20 +129,23 @@ export default class D3Team {
       .attr('id', (node: Node) => 'img' + node.hero.id).attr('width', 1).attr('height', 1)
       .append('image')
       .attr('xlink:href', (node: Node) => node.icon)
-      .attr('x', (node: Node) => node.r - 16)
-      .attr('y', (node: Node) => node.r - 16)
+      .transition()
+        .duration(750)
+        .attr('x', (node: Node) => node.r - 16)
+        .attr('y', (node: Node) => node.r - 16)
 
     this.defsWrap = defsWrapEnter.merge(this.defsWrap)
   }
 
   generateLinks () {
-    this.linkWrap = d3.select('#allLink').selectAll('g').data(this.links.filter(link => link.picks > 1), d => d.id)
+    this.linkWrap = d3.select('#allLink').selectAll('g').data(this.links.filter(item => item.picks > 1), d => d.id)
 
     this.linkWrap
       .select('line')
-      .attr('stroke', d => d.color)
-      .attr('stroke-width', d => 2)
-      .attr('stroke-opacity', d => d.opacity)
+      .transition()
+        .duration(750)
+        .attr('stroke', d => d.color)
+        .attr('stroke-opacity', d => d.opacity)
 
     this.linkWrap.exit().remove()
 
@@ -135,9 +154,11 @@ export default class D3Team {
     linkWrapEnter
       .append('g')
       .append('line')
-      .attr('stroke', d => d.color)
-      .attr('stroke-width', d => 2)
-      .attr('stroke-opacity', d => d.opacity)
+      .transition()
+        .duration(750)
+        .attr('stroke', d => d.color)
+        .attr('stroke-width', d => 2)
+        .attr('stroke-opacity', d => d.opacity)
 
     this.linkWrap = linkWrapEnter.merge(this.linkWrap)
   }
@@ -225,6 +246,9 @@ export default class D3Team {
 
     this.matches = matches
 
+    this.links.push(...this.outfilteredLinks)
+    this.outfilteredLinks = []
+
     this.nodes.map(node => node.selection(props.selectedHeroes))
 
     this.removeOldMatches(oldMatches)
@@ -234,11 +258,18 @@ export default class D3Team {
     this.generateDefs()
     this.generateNodes()
 
+    // for (let i = 0; i < this.links.length; i++) {
+    //   if (this.links[i].picks < 2) {
+    //     this.outfilteredLinks.push(...this.links.splice(i, 1))
+    //     i--
+    //   }
+    // }
+
     this.simulation
       .nodes(this.nodes)
       .on('tick', this.tick)
 
-    this.simulation.force('link').links(this.links.filter(link => link.picks > 1))
+    this.simulation.force('link').links(this.links.filter(item => item.picks > 1))
     this.simulation.alpha(1).restart()
   }
 }
