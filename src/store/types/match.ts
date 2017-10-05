@@ -1,4 +1,4 @@
-import { observable, action, computed } from 'mobx'
+import { observable, action, computed, createTransformer } from 'mobx'
 
 import League from './league'
 import Pick from './pick'
@@ -99,4 +99,8 @@ export default class {
 
     this.withExtra = true
   }
+
+  teamPicks = createTransformer((id: number): Array<Pick> => {
+    return this.radiantTeam.id == id ? this.radiantPicks : this.direPicks
+  })
 }

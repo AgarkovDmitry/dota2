@@ -24,12 +24,12 @@ class Store {
     this.fetch()
 
     autorun(() => {
-      this.D3Team.render({
-        info: this.heroesStats,
-        selectedHeroes: this.selectedHeroes,
-        selectHero: this.selectHero,
-        styles
-      })
+      if (!this.data.loadingMatches)
+        this.D3Team.render({
+          selectedHeroes: this.selectedHeroes,
+          selectHero: this.selectHero,
+          styles
+        }, this.filteredMatches, this.team)
     })
   }
 
@@ -56,62 +56,6 @@ class Store {
     this.selectedHeroes.find(item => item.id == hero.id)
     ? this.selectedHeroes = this.selectedHeroes.filter(item => item.id != hero.id)
     : this.selectedHeroes.push(hero)
-  }
-
-  @computed get heroesStats() {
-    let { nodes, links } = this.filteredMatches.reduce((res, match) => {
-      const picks = (match.radiantTeam.id == this.team ? match.radiantPicks : match.direPicks).sort((a, b) => a.hero.id - b.hero.id)
-      const win = +(match.winnerTeam.id == this.team)
-
-      const nodes = picks.map(item => ({ hero: item.hero, win }) )
-
-      const links = picks.reduce((res, item, index) => {
-        let arr = picks.filter((pick, key) => key > index).map(pick => ({
-            id: item.hero.id + '-' + pick.hero.id,
-            source: item.hero,
-            target: pick.hero,
-            win
-          })
-        )
-
-        return [...res, ...arr]
-      }, [])
-
-      return {
-        nodes: [...res.nodes, ...nodes],
-        links: [...res.links, ...links]
-      }
-    }, {
-      nodes: [],
-      links: []
-    })
-
-    nodes = nodes.reduce((res, item) => {
-      const index = res.findIndex(node => node.hero.id == item.hero.id )
-
-      if (index == -1) return [...res, { ...item, pick: 1 }]
-      else return [
-        ...res.filter((item, key) => key < index),
-        { ...item, win: res[index].win + item.win, pick: res[index].pick + 1 },
-        ...res.filter((item, key) => key > index)
-      ]
-    }, [])
-
-    links = links.reduce((res, item) => {
-      const index = res.findIndex(link => link.id == item.id)
-
-      if (index == -1) return [...res, { ...item, pick: 1 }]
-      else return [
-        ...res.filter((item, key) => key < index),
-        { ...item, win: res[index].win + item.win, pick: res[index].pick + 1 },
-        ...res.filter((item, key) => key > index)
-      ]
-    }, [])
-
-    return {
-      nodes,
-      links
-    }
   }
 }
 

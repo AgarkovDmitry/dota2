@@ -37,15 +37,16 @@ class Store {
   }
 
   @action async loadMatchesWithExtras (count: number = 5, fromStart: boolean = true, filters: object = {}) {
+    this.loadingMatches = true
     await this.loadMatches(count, fromStart)
     const ids = this.getMatches(filters).map(match => match.id)
-    this.loadMatchesExtra(ids)
+    await this.loadMatchesExtra(ids)
+    this.loadingMatches = false
   }
 
   @action async loadMatches (count: number = 5, fromStart: boolean = true) {
     const matchesCount = this.matches.length
     const resCount = fromStart ? count - matchesCount / 100 : count
-    this.loadingMatches = true
 
     let res = []
     for (let i = 0; i < resCount; i++) {
@@ -65,8 +66,6 @@ class Store {
         .filter(item => this.getTeam(item.radiant_team_id) && this.getTeam(item.dire_team_id))
         .map(match => new Match(match, this.getLeague, this.getTeam))
     )
-
-    this.loadingMatches = false
   }
 
   @action async loadMatchExtra (id: number) {
@@ -79,10 +78,8 @@ class Store {
 
   @action async loadMatchesExtra (ids: Array<number>) {
     const matches = this.matches.filter((item) => ids.includes(item.id) && !item.withExtra)
-    matches.map(async(match) => {
-      const res = await api.fetchMatchInfo(match.id)
-      match.loadExtra(res, this.getHero)
-    })
+    const responces = await Promise.all(matches.map(match => api.fetchMatchInfo(match.id)))
+    responces.map(responce => this.getMatch(responce.match_id).loadExtra(responce, this.getHero))
   }
 
   getHero = createTransformer((id: number): Hero => {
@@ -99,6 +96,10 @@ class Store {
 
   getTeam = createTransformer((id: number): Team => {
     return this.teams.find(item => item.id == id)
+  })
+
+  getMatch = createTransformer((id: number): Match => {
+    return this.matches.find(item => item.id == id)
   })
 
   getMatches = createTransformer((filters: any): Array<Match> => {
