@@ -1,9 +1,10 @@
-import { observer, inject } from 'mobx-react'
+import { observer } from 'mobx-react'
 import { compose } from 'recompose'
+import onClickOutside from 'react-onclickoutside'
 
 import Component from './component'
 
 export default compose(
-  inject('store'),
+  onClickOutside,
   observer
 )(Component)

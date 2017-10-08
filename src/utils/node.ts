@@ -34,7 +34,7 @@ export default class Node {
   }
 
   @computed get picks() { return this.matches.length }
-  @computed get wins() { return this.matches.filter(match => match.winnerTeam.id == this.teamId).length }
+  @computed get wins() { return this.matches.filter(match => match.didHeroWin(this.hero)).length }
   @computed get winRate() { return this.wins / this.picks }
 
   @computed get id() { return this.hero.id }
@@ -43,13 +43,13 @@ export default class Node {
 
   @computed get r() { return this.picks > 20 ? 35 : 25 + Math.ceil(this.picks / 2) }
   @computed get color() { return getWinRateColor(this.winRate) }
-  @computed get array() { return this.selected ? this.r * Math.PI / 8 : 0 }
+  @computed get array() { return this.selected ? this.r * Math.PI / 8 : 2 * Math.PI * this.r }
   @computed get offset() { return this.selected ? this.r * Math.PI : 0 }
   @computed get class() { return this.selected ? this.styles.selectedHero : this.styles.hero }
 
   @action removeOldMatches = (matches: Array<Match>) => {
     matches.map(match => {
-      const index = this.matches.findIndex(item => item.id == match.id)
+      const index = this.matches.findIndex(item => item == match)
       if (index > -1)
         this.matches.splice(index, 1)
     })
@@ -59,13 +59,13 @@ export default class Node {
     this.matches.push(
       ...matches
       .filter(match =>
-        match.teamPicks(this.teamId).find(pick => pick.hero.id == this.hero.id)
-        && !this.matches.find(item => item.id == match.id)
+        match.teamPicks(this.teamId).find(pick => pick.hero == this.hero)
+        && !this.matches.find(item => item == match)
       )
     )
   }
 
   @action selection = (heroes: Array<Hero>) => {
-    this.selected = !!heroes.find(hero => hero.id == this.hero.id)
+    this.selected = !!heroes.find(hero => hero == this.hero)
   }
 }

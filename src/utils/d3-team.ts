@@ -62,11 +62,11 @@ export default class D3Team {
 
     this.nodeWrap
       .select('circle')
-      .attr('stroke-dasharray', (node: Node) => node.array)
       .attr('stroke-dashoffset', (node: Node) => node.offset)
       .attr('class', (node: Node) => node.class)
       .transition()
         .duration(750)
+        .attr('stroke-dasharray', (node: Node) => node.array)
         .attr('r', (node: Node) => node.r)
         .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
         .attr('stroke', (node: Node) => node.color)
@@ -204,7 +204,7 @@ export default class D3Team {
   appendNewMatches (matches: Array<Match>, teamId: number, props) : void {
     matches.map(match =>
       match.teamPicks(teamId).map(pick =>
-        ! this.nodes.find(node => node.hero.id == pick.hero.id)
+        ! this.nodes.find(node => node.hero == pick.hero)
         && this.nodes.push(new Node(pick.hero, teamId, props.selectHero, props.styles))
       )
     )
@@ -214,7 +214,7 @@ export default class D3Team {
     matches.map(match => {
       const pairs = this.picksToPairs({ picks: match.teamPicks(teamId) })
       pairs.map(pair =>
-        ! this.links.find(link => link._source.id == pair.source.id && link._target.id == pair.target.id)
+        ! this.links.find(link => link._source == pair.source && link._target == pair.target)
         && this.links.push(new Link(pair.source.hero, pair.target.hero, teamId))
       )
     })
@@ -237,11 +237,11 @@ export default class D3Team {
 
   render (props, matches: Array<Match>, teamId: number) {
     const oldMatches = this.matches.filter(
-      item => !matches.find(match => match.id == item.id)
+      item => !matches.find(match => match == item)
     )
 
     const newMatches = matches.filter(
-      item => !this.matches.find(match => match.id == item.id)
+      item => !this.matches.find(match => match == item)
     )
 
     this.matches = matches

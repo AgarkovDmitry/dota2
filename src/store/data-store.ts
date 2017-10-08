@@ -103,13 +103,11 @@ class Store {
   })
 
   getMatches = createTransformer((filters: any): Array<Match> => {
-    const { loaded, league, team, side, rival, duration, matches, heroes } = filters
+    const { loaded, team, side, rival, duration, matches, heroes } = filters
     let data: Array<Match> = this.matches
 
-    if (league) data = data.filter(item => item.league.id == league)
-
     if (team) {
-      if (side) data = data.filter(item => item[side] == team)
+      if (side) data = data.filter(item => item[side] == side)
       else data = data.filter(item => item.radiantTeam.id == team || item.direTeam.id == team)
 
       if (rival) data = data.filter(item => item.radiantTeam.id == rival || item.direTeam.id == rival)

@@ -10,11 +10,33 @@ interface Props{
   chooseTeam: Function
   teams: Array<Team>
 }
-
+/*  mapProps(
+    ({ store, history, close }) => ({
+      teams: store.dataStore.teams
+        .sort((a, b) => b.rating - a.rating)
+        .filter((item, key) => key < 100),
+      chooseTeam: (team) => {
+        close()
+        history.push(`/teams/${team.id}`)
+        store.localStore.setTeam(team.id)
+      },
+      close
+    })
+  ),*/
 export default class ChooseTeamBody extends React.Component<Props, null>{
   @observable filter: string = ''
 
   @action update = (e) => this.filter = e.target.value
+
+  // @computed get teams() {
+  //   return this.props.store.dataStore.teams.sort((a, b) => b.rating - a.rating).filter((item, key) => key < 100)
+  // }
+
+  // chooseTeam = createTransformer((team) => {
+  //   this.props.close()
+  //   this.props.history.push(`/teams/${this.props.team.id}`)
+  //   this.props.store.localStore.setTeam(this.props.team.id)
+  // })
 
   render() {
     const { close, teams, chooseTeam } = this.props

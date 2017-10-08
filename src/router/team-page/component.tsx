@@ -18,23 +18,23 @@ class Page extends React.Component<any, null>{
     return (
       team && store.localStore
       ? <div className={styles.page}>
-          <LeftBar {...this.props}/>
-          <div className={styles.centralContent}>
-            <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
-            <svg className={styles.svgContainer}>
-              <g id='allLink'/>
-              <g id='allNode'/>
-              <defs id='allPattern'/>
-            </svg>
-          </div>
-          <div className={styles.rightBar}>
-            {
-              this.props.store.localStore.filteredMatches.map((match) => (
-                <MatchContainer match={match} key={match.id}/>
-              ))
-            }
-          </div>
-          <HeroInfo/>
+        <LeftBar {...this.props}/>
+        <div className={styles.centralContent}>
+          <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
+          <svg className={styles.svgContainer}>
+            <g id='allLink'/>
+            <g id='allNode'/>
+            <defs id='allPattern'/>
+          </svg>
+        </div>
+        <div className={styles.rightBar}>
+          {
+            this.props.store.localStore.filteredMatches.map((match) => (
+              <MatchContainer match={match} key={match.id}/>
+            ))
+          }
+        </div>
+        <HeroInfo/>
       </div>
       : null
     )

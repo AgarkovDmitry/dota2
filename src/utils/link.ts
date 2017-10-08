@@ -33,7 +33,7 @@ export default class Link {
   }
 
   @computed get picks() { return this.matches.length }
-  @computed get wins() { return this.matches.filter(match => match.winnerTeam.id == this.teamId).length }
+  @computed get wins() { return this.matches.filter(match => match.didHeroWin(this._source)).length }
   @computed get winRate() { return this.wins / this.picks }
 
   @computed get id() { return this._source.id + '-' + this._target.id }
@@ -49,7 +49,7 @@ export default class Link {
       this.target = target
 
       matches.map(match => {
-        const index = this.matches.findIndex(item => item.id == match.id)
+        const index = this.matches.findIndex(item => item == match)
         if (index > -1)
           this.matches.splice(index, 1)
       })
@@ -63,9 +63,9 @@ export default class Link {
     this.matches.push(
       ...matches
       .filter(match =>
-        match.teamPicks(this.teamId).find(pick => pick.hero.id == this._source.id)
-        && match.teamPicks(this.teamId).find(pick => pick.hero.id == this._target.id)
-        && !this.matches.find(item => item.id == match.id)
+        match.teamPicks(this.teamId).find(pick => pick.hero == this._source)
+        && match.teamPicks(this.teamId).find(pick => pick.hero == this._target)
+        && !this.matches.find(item => item == match)
       )
     )
   }

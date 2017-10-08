@@ -1,0 +1,43 @@
+.container{
+  position: relative;
+}
+
+.optionsContainer{
+  position: absolute;
+  width: 80%;
+  left: 10%;
+  border: 2px solid #e4ae33;
+  border-top: 0px;
+  border-radius: 0px 0px 10px 10px;
+  z-index: 10;
+}
+
+.option {
+  padding: 5px 7.5%;
+  font-size: 1em;
+  background-color: #333;
+  color: #e4ae33;
+  font-family: PT_Sans;
+  outline: none;
+  cursor: pointer;
+}
+
+.option:last-child{
+  border-radius: 0px 0px 8px 8px;
+}
+
+.option:hover {
+  box-shadow: inset 0px 0px 20px;
+  // font-weight: 600;
+}
+
+.selectedOption {
+  @extend .option;
+  background-color: #e4ae33;
+  color: #333;
+  font-weight: 600;
+}
+
+.selectedOption:hover {
+  // font-weight: initial;
+}

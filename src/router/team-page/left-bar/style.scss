@@ -1,5 +1,5 @@
 .leftBar{
-  flex-basis: 20%;
+  flex-basis: 15%;
   flex-direction: column;
   display: flex;
 }
@@ -54,4 +54,8 @@
   background-color: #333;
   color: #e4ae33;
   cursor: default;
+}
+
+.filterWrap{
+  margin: 5px;
 }

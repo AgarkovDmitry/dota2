@@ -7,11 +7,7 @@ import DataStore from 'store/data-store'
 
 const styles = require('./style.scss')
 
-export default class HeroInfo extends React.Component<any, any>{
-  constructor (props) {
-    super(props)
-  }
-
+export default class HeroInfo extends React.Component<any, null>{
   @computed get localStore(): LocalStore {
     return this.props.store.localStore
   }
@@ -33,40 +29,41 @@ export default class HeroInfo extends React.Component<any, any>{
   }
 
   @computed get bans (): number {
-    const hero = this.localStore.selectedHeroes[0]
+    const hero = this.localStore.heroes[0]
     let matches = this.localStore.filteredMatches
 
     return matches.filter(match => {
       const picks = match.radiantTeam.id == this.localStore.team ? match.direBans : match.radiantBans
-      return picks.reduce((res, a) => res || a.hero.id == hero.id, false)
+      return picks.reduce((res, a) => res || a.hero == hero, false)
     }).length
   }
 
   @computed get heroStat() {
-    if (this.hero) {
-      let matches = this.localStore.filteredMatches
-      let heroStats = matches.map(match => {
-        const player = match.players.find(player => player.hero_id == this.localStore.selectedHeroes[0].id)
-        return { account_id: player.account_id, won: match.winnerTeam.id == this.localStore.team }
-      })
+    if (!this.hero)
+      return []
 
-      let players = heroStats.reduce((a, b) => a.includes(b.account_id) ? a : [...a, b.account_id], [])
+    let picks = this.localStore.filteredMatches.map(match => {
+      const pick = match.teamPicks(this.localStore.team).find(pick => pick.hero == this.hero)
+      return { player: pick.player, win: match.didHeroWin(this.hero) }
+    })
 
-      players = players.map(player => heroStats.reduce((res, hero) =>
-        hero.account_id == player ? { ...res, wins: res.wins + +hero.won, picks: res.picks + 1 } : res,
-        { account_id: player, wins: 0, picks: 0 })
+    let players = picks
+      .reduce((a, b) =>
+        a.find(item => item == b.player) ? a : [...a, b.player],
+        []
+      )
+      .map(player => picks.reduce((res, pick) =>
+        pick.player == player ? { ...res, wins: res.wins + +pick.win, picks: res.picks + 1 } : res,
+        { player, wins: 0, picks: 0 })
       )
 
-      return players.map(item => {
-        const player = this.data.getPlayer(item.account_id)
-        return { ...item, ...player, isActual: player.team.id == this.localStore.team }
-      })
-    }
-    return []
+    return players.map(item =>
+      ({ ...item, isActual: item.player && item.player.team && item.player.team.id == this.localStore.team })
+    )
   }
 
   @computed get hero(): Hero {
-    return this.localStore.selectedHeroes.length == 1 ? this.localStore.selectedHeroes[0] : null
+    return this.localStore.heroes.length == 1 ? this.localStore.heroes[0] : null
   }
 
   render () {
@@ -80,9 +77,9 @@ export default class HeroInfo extends React.Component<any, any>{
           </div>
           <div className={styles.statsContainer}>
             {
-              this.heroStat.map(stat => (
-                <div className={styles.statContainer} key={stat.account_id}>
-                  <div className={styles.playerName}>{stat.name}</div>
+              this.heroStat.filter(item => item.player).map(stat => (
+                <div className={styles.statContainer} key={stat.player.id}>
+                  <div className={styles.playerName}>{stat.player.name}</div>
                   <div className={styles.playerWins}>{stat.wins} / {stat.picks}</div>
                   <div className={styles.playerPercent}>{(100 * stat.wins / stat.picks).toFixed(0)}%</div>
                 </div>
