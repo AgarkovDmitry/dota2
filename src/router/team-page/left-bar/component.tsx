@@ -3,6 +3,7 @@ import * as React from 'react'
 import Drawer from 'components/drawer'
 import Loader from 'components/loader'
 import Select from 'components/select'
+import Button from 'components/button'
 import ChooseTeamBody from 'components/drawer/bodies/choose-team'
 
 import Store from 'store'
@@ -30,13 +31,13 @@ export default class LeftBar extends React.Component<Props, null>{
       this.props.team
       ? <div className={styles.leftBar}>
         <div className={styles.fetchContainer}>
-          <button onClick={fetchMatches} className={styles.teamsButton} disabled={loading}>
+          <Button handleClick={fetchMatches} disabled={loading}>
             {
               !loading
               ? `Load more matches(${matchesLength})`
               : <Loader/>
             }
-          </button>
+          </Button>
         </div>
 
         <div className={styles.filtersContainer}>
@@ -65,9 +66,9 @@ export default class LeftBar extends React.Component<Props, null>{
         <div className={styles.teamContainer}>
           <Drawer
             trigger={
-              ({ open }) => <button onClick={open} className={styles.teamsButton}>
-                Select another team
-              </button>
+              ({ open }) => <Button handleClick={open}>
+                  Select another team
+              </Button>
             }
             body={ChooseTeamBody}
           />

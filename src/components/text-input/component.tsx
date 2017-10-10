@@ -9,7 +9,6 @@ interface Props{
 
 export default class TextInput extends React.Component<Props, null>{
   render() {
-
     return (
       <input
         type='text'

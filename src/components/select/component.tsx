@@ -27,13 +27,12 @@ export default class Select extends React.Component<Props, null>{
   @action close = () => this.isOpened = false
 
   render() {
-
     return (
       <div className={styles.container}>
         {
           this.isOpened && this.props.filter
           ? <TextInput autoFocus placeholder={this.props.name} update={this.update}/>
-          : <Button text={this.props.name} handleClick={this.open}/>
+          : <Button handleClick={this.open}> {this.props.name} </Button>
         }
         {
           this.isOpened

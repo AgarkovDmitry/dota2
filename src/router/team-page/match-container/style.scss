@@ -1,9 +1,8 @@
-$green: #54b628;
-$red: #e0441e;
+@import '~assets/styles/colors.scss';
 
 .match {
-  background: #333;
-  color: #E4AE33;
+  background: $black;
+  color: $gold;
   text-align: center;
   font-weight: bold;
   margin: 27px 10px;
@@ -14,12 +13,12 @@ $red: #e0441e;
 }
 .win {
   @extend .match;
-  box-shadow: 0px 0px 10px 3px $green;
+  box-shadow: 0px 0px 10px 3px $winGreen;
 }
 
 .loss {
   @extend .match;
-  box-shadow: 0px 0px 10px 3px $red;
+  box-shadow: 0px 0px 10px 3px $loseRed;
 }
 
 .clickable {
@@ -60,14 +59,14 @@ $red: #e0441e;
 }
 
 .image:hover{
-  box-shadow: 0px 0px 20px 5px #E4AE33;
+  box-shadow: 0px 0px 20px 5px $gold;
 }
 
 .imageBan:hover{
-  box-shadow: 0px 0px 20px 5px #333;
+  box-shadow: 0px 0px 20px 5px $black;
 }
 
 .learnMore {
   text-decoration: none;
-  color: #E4AE33;
+  color: $gold;
 }

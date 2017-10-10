@@ -1,7 +1,9 @@
 import { observable, action, computed } from 'mobx'
 
-import Match from 'store/types/match'
+import Draft from 'store/types/draft'
 import Hero from 'store/types/hero'
+
+const styles = require('./style.scss')
 
 const getWinRateColor = (winRate: number) => {
   if (winRate <= 0.1) return '#E0441D'
@@ -18,23 +20,18 @@ const getWinRateColor = (winRate: number) => {
 
 export default class Node {
   hero: Hero
-  teamId: number
-
   click: Function
-  styles: any
 
-  @observable matches: Array<Match> = []
+  @observable drafts: Array<Draft> = []
   @observable selected: boolean = false
 
-  constructor(hero, teamId, click, styles) {
+  constructor(hero, click) {
     this.hero = hero
-    this.teamId = teamId
     this.click = click
-    this.styles = styles
   }
 
-  @computed get picks() { return this.matches.length }
-  @computed get wins() { return this.matches.filter(match => match.didHeroWin(this.hero)).length }
+  @computed get picks() { return this.drafts.length }
+  @computed get wins() { return this.drafts.filter(draft => draft.win).length }
   @computed get winRate() { return this.wins / this.picks }
 
   @computed get id() { return this.hero.id }
@@ -45,22 +42,22 @@ export default class Node {
   @computed get color() { return getWinRateColor(this.winRate) }
   @computed get array() { return this.selected ? this.r * Math.PI / 8 : 2 * Math.PI * this.r }
   @computed get offset() { return this.selected ? this.r * Math.PI : 0 }
-  @computed get class() { return this.selected ? this.styles.selectedHero : this.styles.hero }
+  @computed get class() { return this.selected ? styles.selectedHero : styles.hero }
 
-  @action removeOldMatches = (matches: Array<Match>) => {
-    matches.map(match => {
-      const index = this.matches.findIndex(item => item == match)
+  @action removeOldDrafts = (drafts: Array<Draft>) => {
+    drafts.map(draft => {
+      const index = this.drafts.findIndex(item => item == draft)
       if (index > -1)
-        this.matches.splice(index, 1)
+        this.drafts.splice(index, 1)
     })
   }
 
-  @action appendNewMatches = (matches: Array<Match>) => {
-    this.matches.push(
-      ...matches
-      .filter(match =>
-        match.teamPicks(this.teamId).find(pick => pick.hero == this.hero)
-        && !this.matches.find(item => item == match)
+  @action appendNewDrafts = (drafts: Array<Draft>) => {
+    this.drafts.push(
+      ...drafts
+      .filter(draft =>
+        draft.picks.find(pick => pick.hero == this.hero)
+        && !this.drafts.find(item => item == draft)
       )
     )
   }

@@ -1,9 +1,9 @@
 import * as d3 from 'd3'
-import { createTransformer } from 'mobx'
 
 import Node from './node'
 import Link from './link'
-import Match from 'store/types/match'
+import Draft from 'store/types/draft'
+import Hero from 'store/types/hero'
 
 export default class D3Team {
   simulation
@@ -12,11 +12,11 @@ export default class D3Team {
   defsWrap
   linkWrap
 
-  matches: Array<Match>
+  drafts: Array<Draft>
   nodes: Array<Node>
   links: Array<Link>
 
-  outfilteredLinks: Array<Link>
+  // outfilteredLinks: Array<Link>
 
   drag
 
@@ -48,8 +48,8 @@ export default class D3Team {
 
     this.nodes = []
     this.links = []
-    this.outfilteredLinks = []
-    this.matches = []
+    // this.outfilteredLinks = []
+    this.drafts = []
 
     this.drag = d3.drag()
       .on('start', dragstarted)
@@ -62,22 +62,14 @@ export default class D3Team {
 
     this.nodeWrap
       .select('circle')
-      .attr('stroke-dashoffset', (node: Node) => node.offset)
       .attr('class', (node: Node) => node.class)
       .transition()
         .duration(750)
-        .attr('stroke-dasharray', (node: Node) => node.array)
         .attr('r', (node: Node) => node.r)
         .attr('fill', (node: Node) => 'url(#img' + node.hero.id + ')')
         .attr('stroke', (node: Node) => node.color)
-
-    this.nodeWrap
-      .selectAll('g')
-      .select('circle')
-      .on('click', (node: Node) => node.click(node.hero))
-      .call(this.drag)
-      .select('title')
-      .text((node: Node) => node.name)
+        .attr('stroke-dasharray', (node: Node) => node.array)
+        .attr('stroke-dashoffset', (node: Node) => node.offset)
 
     this.nodeWrap
       .exit()
@@ -88,6 +80,7 @@ export default class D3Team {
     nodeWrapEnter
       .append('g')
       .append('circle')
+      .attr('class', (node: Node) => node.class)
       .transition()
         .duration(750)
         .attr('r', (node: Node) => node.r)
@@ -96,7 +89,6 @@ export default class D3Team {
         .attr('stroke-width', 3)
         .attr('stroke-dasharray', (node: Node) => node.array)
         .attr('stroke-dashoffset', (node: Node) => node.offset)
-        .attr('class', (node: Node) => node.class)
 
     nodeWrapEnter
       .selectAll('g')
@@ -163,100 +155,72 @@ export default class D3Team {
     this.linkWrap = linkWrapEnter.merge(this.linkWrap)
   }
 
-  tick = () => {
-    this.linkWrap
-    .selectAll('line')
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y)
-
-    this.nodeWrap
-      .selectAll('circle')
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-  }
-
-  removeOldMatches (matches: Array<Match>) : void {
-    this.nodes.map(node => node.removeOldMatches(matches))
+  removeOldDrafts (drafts: Array<Draft>) : void {
+    this.nodes.map(node => node.removeOldDrafts(drafts))
 
     for (let k = 0; k < this.nodes.length; k++) {
-      if (!this.nodes[k].matches.length) {
+      if (!this.nodes[k].drafts.length) {
         this.nodes.splice(k, 1)
         k--
       }
     }
 
-    this.links.map(link => link.removeOldMatches(
-      matches,
+    this.links.map(link => link.removeOldDrafts(
+      drafts,
       this.nodes.findIndex(item => item.id == link._source.id),
       this.nodes.findIndex(item => item.id == link._target.id)
     ))
 
     for (let k = 0; k < this.links.length; k++) {
-      if (!this.links[k].matches.length) {
+      if (!this.links[k].drafts.length) {
         this.links.splice(k, 1)
         k--
       }
     }
   }
 
-  appendNewMatches (matches: Array<Match>, teamId: number, props) : void {
-    matches.map(match =>
-      match.teamPicks(teamId).map(pick =>
+  appendNewDrafts (drafts: Array<Draft>, select: Function) : void {
+    drafts.map(draft =>
+      draft.picks.map(pick =>
         ! this.nodes.find(node => node.hero == pick.hero)
-        && this.nodes.push(new Node(pick.hero, teamId, props.selectHero, props.styles))
+        && this.nodes.push(new Node(pick.hero, select))
       )
     )
 
-    this.nodes.map(node => node.appendNewMatches(matches))
+    this.nodes.map(node => node.appendNewDrafts(drafts))
 
-    matches.map(match => {
-      const pairs = this.picksToPairs({ picks: match.teamPicks(teamId) })
-      pairs.map(pair =>
+    drafts.map(draft =>
+      draft.pairs.map(pair =>
         ! this.links.find(link => link._source == pair.source && link._target == pair.target)
-        && this.links.push(new Link(pair.source.hero, pair.target.hero, teamId))
+        && this.links.push(new Link(pair.source.hero, pair.target.hero))
       )
-    })
+    )
 
-    this.links.map(link => link.appendNewMatches(
-      matches,
+    this.links.map(link => link.appendNewDrafts(
+      drafts,
       this.nodes.findIndex(item => item.id == link._source.id),
       this.nodes.findIndex(item => item.id == link._target.id)
     ))
   }
 
-  picksToPairs = createTransformer(({ picks }) => {
-    return picks.sort((a, b) => a.hero.id - b.hero.id).reduce((res, pick, key) => {
-      picks.filter((item, index) => index > key).map(item => {
-        res.push({ target: pick, source: item, team: pick.team })
-      })
-      return res
-    }, [])
-  })
-
-  render (props, matches: Array<Match>, teamId: number) {
-    const oldMatches = this.matches.filter(
-      item => !matches.find(match => match == item)
+  render (heroes: Array<Hero>, select: Function, drafts: Array<Draft>) {
+    const oldDrafts = this.drafts.filter(
+      item => !drafts.find(match => match == item)
     )
 
-    const newMatches = matches.filter(
-      item => !this.matches.find(match => match == item)
+    const newDrafts = drafts.filter(
+      item => !this.drafts.find(match => match == item)
     )
 
-    this.matches = matches
+    this.drafts = drafts
 
-    this.links.push(...this.outfilteredLinks)
-    this.outfilteredLinks = []
+    // this.links.push(...this.outfilteredLinks)
+    // this.outfilteredLinks = []
 
-    this.nodes.map(node => node.selection(props.selectedHeroes))
+    this.nodes.map(node => node.selection(heroes))
 
-    this.removeOldMatches(oldMatches)
-    this.appendNewMatches(newMatches, teamId, props)
-
-    this.generateLinks()
-    this.generateDefs()
-    this.generateNodes()
+    this.removeOldDrafts(oldDrafts)
+    this.appendNewDrafts(newDrafts, select)
 
     // for (let i = 0; i < this.links.length; i++) {
     //   if (this.links[i].picks < 2) {
@@ -265,9 +229,25 @@ export default class D3Team {
     //   }
     // }
 
+    this.generateLinks()
+    this.generateDefs()
+    this.generateNodes()
+
     this.simulation
       .nodes(this.nodes)
-      .on('tick', this.tick)
+      .on('tick', () => {
+        this.linkWrap
+        .selectAll('line')
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y)
+
+        this.nodeWrap
+          .selectAll('circle')
+          .attr('cx', d => d.x)
+          .attr('cy', d => d.y)
+      })
 
     this.simulation.force('link').links(this.links.filter(item => item.picks > 1))
     this.simulation.alpha(1).restart()

@@ -3,6 +3,9 @@ import { observable, action } from 'mobx'
 
 import Team from 'store/types/team'
 
+import Button from 'components/button'
+import TextInput from 'components/text-input'
+
 const styles = require('./style.scss')
 
 interface Props{
@@ -10,40 +13,18 @@ interface Props{
   chooseTeam: Function
   teams: Array<Team>
 }
-/*  mapProps(
-    ({ store, history, close }) => ({
-      teams: store.dataStore.teams
-        .sort((a, b) => b.rating - a.rating)
-        .filter((item, key) => key < 100),
-      chooseTeam: (team) => {
-        close()
-        history.push(`/teams/${team.id}`)
-        store.localStore.setTeam(team.id)
-      },
-      close
-    })
-  ),*/
+
 export default class ChooseTeamBody extends React.Component<Props, null>{
   @observable filter: string = ''
 
   @action update = (e) => this.filter = e.target.value
-
-  // @computed get teams() {
-  //   return this.props.store.dataStore.teams.sort((a, b) => b.rating - a.rating).filter((item, key) => key < 100)
-  // }
-
-  // chooseTeam = createTransformer((team) => {
-  //   this.props.close()
-  //   this.props.history.push(`/teams/${this.props.team.id}`)
-  //   this.props.store.localStore.setTeam(this.props.team.id)
-  // })
 
   render() {
     const { close, teams, chooseTeam } = this.props
 
     return (
       <div className={styles.container}>
-        <input type='text' placeholder='Search team' className={styles.searchBox} onChange={this.update}/>
+        <TextInput placeholder={'Search team'} update={this.update}/>
         <ul className={styles.teams}>
           {
             teams
@@ -55,7 +36,7 @@ export default class ChooseTeamBody extends React.Component<Props, null>{
             ))
           }
         </ul>
-        <button onClick={e => close()} className={styles.button}> Close </button>
+        <Button handleClick={e => close()} className={styles.button}> Close </Button>
       </div>
     )
   }

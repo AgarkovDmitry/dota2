@@ -1,8 +1,6 @@
 import { observable, action, computed, autorun } from 'mobx'
 
-import D3Team from 'utils/d3-team'
-
-const styles = require('./style.scss')
+import D3Team from 'd3/d3-team'
 
 import Match from 'store/types/match'
 import Hero from 'store/types/hero'
@@ -28,11 +26,11 @@ class Store {
 
     autorun(() => {
       if (!this.data.loadingMatches)
-        this.D3Team.render({
-          selectedHeroes: this.heroes,
-          selectHero: this.select,
-          styles
-        }, this.filteredMatches, this.team)
+        this.D3Team.render(
+          this.heroes,
+          this.select,
+          this.filteredMatches.map(match => match.teamDraft(this.team))
+        )
     })
   }
 

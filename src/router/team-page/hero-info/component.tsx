@@ -47,19 +47,16 @@ export default class HeroInfo extends React.Component<any, null>{
       return { player: pick.player, win: match.didHeroWin(this.hero) }
     })
 
-    let players = picks
+    return picks
       .reduce((a, b) =>
         a.find(item => item == b.player) ? a : [...a, b.player],
         []
       )
-      .map(player => picks.reduce((res, pick) =>
-        pick.player == player ? { ...res, wins: res.wins + +pick.win, picks: res.picks + 1 } : res,
-        { player, wins: 0, picks: 0 })
+      .map(player =>
+        picks.reduce((res, pick) =>
+          pick.player == player ? { ...res, wins: res.wins + +pick.win, picks: res.picks + 1 } : res,
+          { player, wins: 0, picks: 0, isActual: player && player.team && player.team.id == this.localStore.team })
       )
-
-    return players.map(item =>
-      ({ ...item, isActual: item.player && item.player.team && item.player.team.id == this.localStore.team })
-    )
   }
 
   @computed get hero(): Hero {

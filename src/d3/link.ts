@@ -1,6 +1,6 @@
 import { observable, action, computed } from 'mobx'
 
-import Match from 'store/types/match'
+import Draft from 'store/types/draft'
 import Hero from 'store/types/hero'
 
 const getWinRateColor = (winRate: number) => {
@@ -19,21 +19,19 @@ const getWinRateColor = (winRate: number) => {
 export default class Link {
   _source: Hero
   _target: Hero
-  teamId: number
 
   source: number
   target: number
 
-  @observable matches: Array<Match> = []
+  @observable drafts: Array<Draft> = []
 
-  constructor(source: Hero, target: Hero, teamId: number) {
+  constructor(source: Hero, target: Hero) {
     this._source = source
     this._target = target
-    this.teamId = teamId
   }
 
-  @computed get picks() { return this.matches.length }
-  @computed get wins() { return this.matches.filter(match => match.didHeroWin(this._source)).length }
+  @computed get picks() { return this.drafts.length }
+  @computed get wins() { return this.drafts.filter(draft => draft.win).length }
   @computed get winRate() { return this.wins / this.picks }
 
   @computed get id() { return this._source.id + '-' + this._target.id }
@@ -41,31 +39,36 @@ export default class Link {
   @computed get opacity() { return this.picks * 0.2}
   @computed get color() { return getWinRateColor(this.winRate) }
 
-  @action removeOldMatches = (matches: Array<Match>, source: number, target: number) => {
+  @action removeOldDrafts = (drafts: Array<Draft>, source: number, target: number) => {
+    drafts.map(draft => {
+      const index = this.drafts.findIndex(item => item == draft)
+      if (index > -1) this.drafts.splice(index, 1)
+    })
+
     if (source == -1 || target == -1)
-      this.matches = []
+      this.drafts = []
     else {
       this.source = source
       this.target = target
 
-      matches.map(match => {
-        const index = this.matches.findIndex(item => item == match)
+      drafts.map(draft => {
+        const index = this.drafts.findIndex(item => item == draft)
         if (index > -1)
-          this.matches.splice(index, 1)
+          this.drafts.splice(index, 1)
       })
     }
   }
 
-  @action appendNewMatches = (matches: Array<Match>, source: number, target: number) => {
+  @action appendNewDrafts = (drafts: Array<Draft>, source: number, target: number) => {
     this.source = source
     this.target = target
 
-    this.matches.push(
-      ...matches
-      .filter(match =>
-        match.teamPicks(this.teamId).find(pick => pick.hero == this._source)
-        && match.teamPicks(this.teamId).find(pick => pick.hero == this._target)
-        && !this.matches.find(item => item == match)
+    this.drafts.push(
+      ...drafts
+      .filter(draft =>
+        draft.picks.find(pick => pick.hero == this._source)
+        && draft.picks.find(pick => pick.hero == this._target)
+        && !this.drafts.find(item => item == draft)
       )
     )
   }

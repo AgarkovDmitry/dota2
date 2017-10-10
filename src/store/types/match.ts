@@ -2,6 +2,7 @@ import { observable, action, computed, createTransformer } from 'mobx'
 
 import League from './league'
 import Pick from './pick'
+import Draft from './draft'
 import Team from './team'
 import Hero from './hero'
 
@@ -107,6 +108,10 @@ export default class {
 
   teamPicks = createTransformer((id: number): Array<Pick> => {
     return this.radiantTeam.id == id ? this.radiantPicks : this.direPicks
+  })
+
+  teamDraft = createTransformer((id: number): Draft => {
+    return new Draft(this.teamPicks(id), this.id, this.winnerTeam.id == id)
   })
 
   didHeroWin = createTransformer((hero: Hero): boolean => {

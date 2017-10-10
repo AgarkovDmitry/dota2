@@ -4,7 +4,8 @@ const styles = require('./style.scss')
 
 interface Props{
   handleClick: Function
-  text: string
+  children: string
+  disabled?: boolean
   className?: string
 }
 
@@ -14,8 +15,9 @@ export default class Button extends React.Component<Props, null>{
       <button
         onClick={e => this.props.handleClick()}
         className={this.props.className ? `${styles.button} ${this.props.className}` : styles.button}
+        disabled={this.props.disabled}
       >
-        {this.props.text}
+        {this.props.children}
       </button>
     )
   }

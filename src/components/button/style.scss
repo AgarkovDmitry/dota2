@@ -1,3 +1,5 @@
+@import '~assets/styles/colors.scss';
+
 .button {
   width: 100%;
   height: 100%;
@@ -5,22 +7,22 @@
   font-size: 1.5em;
   font-family: PT_Sans;
   font-size: 1.5em;
-  background-color: #e4ae33;
-  color: #333;
-  border: 2px solid #e4ae33;
+  background-color: $gold;
+  color: $black;
+  border: 2px solid $gold;
   cursor: pointer;
   border-radius: 40px;
   outline: none;
   transition: all 0.5s ease;
-}
 
-.button:hover{
-  background-color: #333;
-  color: #e4ae33;
-}
+  &:hover {
+    background-color: $black;
+    color: $gold;
+  }
 
-.button:disabled{
-  background-color: #333;
-  color: #e4ae33;
-  cursor: default;
+  &:disabled {
+    background-color: $black;
+    color: $gold;
+    cursor: default;
+  }
 }
