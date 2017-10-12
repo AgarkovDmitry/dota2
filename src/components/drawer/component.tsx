@@ -19,17 +19,13 @@ export default class MatchContainer extends React.Component<Props, null>{
     const Body = this.props.body
 
     return (
-      <div className={styles.container}>
-        <Trigger open={this.open}/>
-        {
-          this.isOpen && <div onClick={this.close} className={styles.overlay}/>
-        }
-        {
-          this.isOpen && <div className={styles.body}>
-            <Body close={this.close}/>
-          </div>
-        }
-      </div>
+      [
+        <Trigger open={this.open}/>,
+        this.isOpen && <div onClick={this.close} className={styles.overlay}/>,
+        this.isOpen && <div className={styles.body}>
+          <Body close={this.close}/>
+        </div>
+      ]
     )
   }
 }

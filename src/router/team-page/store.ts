@@ -44,7 +44,7 @@ class Store {
 
   @action fetch = async() => {
     this.data.loadHeroes()
-    await this.data.loadTeams()
+    this.data.loadTeams()
     this.data.loadLeagues()
     this.data.loadPlayers()
     this.data.loadMatchesWithExtras(5, true, { team: this.team })
