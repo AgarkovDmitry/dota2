@@ -132,7 +132,6 @@ export default class D3Team {
   }
 
   generateLinks () {
-    console.log(this.links)
     this.linkWrap = d3.select('#allLink').selectAll('g').data(this.links, d => d.id)
 
     this.linkWrap

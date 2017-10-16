@@ -42,5 +42,9 @@
     "webpack-dev-middleware": "^1.10.2",
     "webpack-hot-middleware": "^2.18.0",
     "offline-plugin": "^4.8.4"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.1.1",
+    "html-webpack-plugin": "^2.30.1"
   }
 }

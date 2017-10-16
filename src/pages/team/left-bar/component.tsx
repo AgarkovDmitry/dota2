@@ -19,7 +19,7 @@ interface Props{
 export default class LeftBar extends React.Component<Props, null>{
   render() {
     const loading = this.props.store.dataStore.loadingMatches
-    const fetchMatches = () => this.props.store.dataStore.loadMatchesWithExtras(5, false, { team: this.props.store.localStore.team })
+    const fetchMatches = () => this.props.store.dataStore.loadMatchesWithExtras(5, false, { team: this.props.store.localStore.team.id })
     const matchesLength = this.props.store.localStore.filteredMatches.length
     const select = this.props.store.localStore.select
     const availableLeagues = this.props.store.localStore.availableLeagues
@@ -31,11 +31,13 @@ export default class LeftBar extends React.Component<Props, null>{
       this.props.team
       ? <div className={styles.leftBar}>
         <div className={styles.fetchContainer}>
-          <Button handleClick={fetchMatches} disabled={loading}>
+          <Button handleClick={fetchMatches} disabled={loading || !navigator.onLine}>
             {
-              !loading
-              ? `Load more matches(${matchesLength})`
-              : <Loader/>
+              navigator.onLine
+              ? !loading
+                ? `Load more matches(${matchesLength})`
+                : <Loader/>
+              : 'Offline mode'
             }
           </Button>
         </div>

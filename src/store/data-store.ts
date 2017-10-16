@@ -1,34 +1,11 @@
 import { observable, action, createTransformer } from 'mobx'
-import api from 'api'
+import cacheProxy from 'helpers/cache-proxy'
 
 import Hero from './types/hero'
 import League from './types/league'
 import Match from './types/match'
 import Player from './types/player'
 import Team from './types/team'
-
-const readFromLocalStorage = (key: string): Array<any> => {
-  let item = JSON.parse(window.localStorage.getItem(key))
-
-  if (!item)
-    return null
-  if (new Date().getTime() > item.expiryDate) {
-    window.localStorage.removeItem(key)
-    return null
-  }
-
-  return item.data
-}
-
-const writeToLocalStorage = (key: string, data: Array<any>, expiryDate: number) => {
-  window.localStorage.setItem(
-    key,
-    JSON.stringify({
-      data,
-      expiryDate: new Date().getTime() + expiryDate * 3600000
-    })
-  )
-}
 
 class Store {
   @observable heroes: Array<Hero> = []
@@ -99,41 +76,23 @@ class Store {
   })
 
   @action async loadHeroes (force?: boolean) {
-    const key = 'heroes'
-    let data = readFromLocalStorage(key)
-
-    if (!data || force) {
-      data = await api.fetchHeroes()
-
-      writeToLocalStorage(key, data, 3)
-    }
-
+    const data = !this.heroes.length ? await cacheProxy.loadHeroes() : []
     this.heroes.push(...data.map(item => new Hero(item)))
   }
 
   @action async loadLeagues (force?: boolean) {
-    const key = 'leagues'
-    let data = readFromLocalStorage(key)
-
-    if (!data || force) {
-      data = await api.fetchLeagues()
-
-      data = data.filter(item => item.tier == 'premium' || item.tier == 'professional')
-
-      writeToLocalStorage(key, data, 24)
-    }
-
+    const data = !this.leagues.length ? await cacheProxy.loadLeagues() : []
     this.leagues.push(...data.map(item => new League(item)))
   }
 
   @action async loadTeams () {
-    const res = !this.teams.length ? await api.fetchTeams() : []
-    this.teams.push(...res.map(item => new Team(item)))
+    const data = !this.teams.length ? await cacheProxy.loadTeams() : []
+    this.teams.push(...data.map(item => new Team(item)))
   }
 
   @action async loadPlayers () {
-    const res = !this.players.length ? await api.fetchPlayers() : []
-    this.players.push(...res.map(item => new Player(item, this.getTeam)))
+    const data = !this.players.length ? await cacheProxy.loadPlayers() : []
+    this.players.push(...data.map(item => new Player(item, this.getTeam)))
   }
 
   @action async loadMatchesWithExtras (count: number = 5, fromStart: boolean = true, filters: any = {}) {
@@ -146,39 +105,33 @@ class Store {
 
   @action async loadMatches (count: number = 5, fromStart: boolean = true) {
     const matchesCount = this.matches.length
-    const resCount = fromStart ? count - matchesCount / 100 : count
+    let res = await cacheProxy.loadMatches(count, matchesCount > 0 ? this.matches[matchesCount - 1].id : undefined)
+    // const resCount = fromStart ? count - matchesCount / 100 : count
 
-    let res = []
-    for (let i = 0; i < resCount; i++) {
-      let tempRes = await api.fetchProMatches(
-        res.length > 0
-          ? res[res.length - 1].match_id
-          : matchesCount > 0
-            ? this.matches[matchesCount - 1].id
-            : undefined
-      )
-      res = [...res, ...tempRes]
-    }
+    // let res = []
+    // for (let i = 0; i < resCount; i++) {
+    //   let tempRes = await api.fetchProMatches(
+    //     res.length > 0
+    //       ? res[res.length - 1].match_id
+    //       : matchesCount > 0
+    //         ? this.matches[matchesCount - 1].id
+    //         : undefined
+    //   )
+    //   res = [...res, ...tempRes]
+    // }
 
     this.matches.push(
       ...res
-        .filter(item => item.radiant_team_id && item.dire_team_id)
+        // .filter(item => item.radiant_team_id && item.dire_team_id)
         .filter(item => this.getTeam(item.radiant_team_id) && this.getTeam(item.dire_team_id))
         .map(match => new Match(match, this.getLeague, this.getTeam))
     )
   }
 
-  @action async loadMatchExtra (id: number) {
-    const matches = this.matches.filter((item) => item.id == id && !item.withExtra)
-    matches.map(async(match) => {
-      const res = await api.fetchMatchInfo(match.id)
-      match.loadExtra(res, this.getHero, this.getPlayer)
-    })
-  }
-
   @action async loadMatchesExtra (ids: Array<number>) {
     const matches = this.matches.filter((item) => ids.includes(item.id) && !item.withExtra)
-    const responces = await Promise.all(matches.map(match => api.fetchMatchInfo(match.id)))
+    // const responces = await Promise.all(matches.map(match => cacheProxy.loadMatchExtra(match.id)))
+    const responces = await cacheProxy.loadMatchesExtra(matches.map(match => match.id))
     responces.map(responce => this.getMatch(responce.match_id).loadExtra(responce, this.getHero, this.getPlayer))
   }
 }

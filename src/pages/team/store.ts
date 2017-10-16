@@ -101,7 +101,7 @@ class Store extends LocalStore{
     this.data.loadTeams()
     this.data.loadLeagues()
     this.data.loadPlayers()
-    this.data.loadMatchesWithExtras(4, true, { team: this._team })
+    this.data.loadMatchesWithExtras(5, true, { team: this._team })
   }
 
   @action select = (item: Hero | League | Team) => {
