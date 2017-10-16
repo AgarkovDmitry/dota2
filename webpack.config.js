@@ -60,18 +60,18 @@ module.exports = {
       externals: [
         './dist/index.html'
       ],
-      // ServiceWorker: {
-      //   events: true,
-      //   navigateFallbackURL: '/',
-      //   publicPath: '/sw.js'
-      // },
-      // AppCache: {
-      //   events: true,
-      //   publicPath: '/appcache',
-      //   FALLBACK: {
-      //     '/': '/'
-      //   },
-      // },
+      ServiceWorker: {
+        events: true,
+        navigateFallbackURL: '/',
+        publicPath: '/sw.js'
+      },
+      AppCache: {
+        events: true,
+        publicPath: '/appcache',
+        FALLBACK: {
+          '/': '/'
+        },
+      },
     }),
   ]
 }
