@@ -3,15 +3,8 @@ import { Router, Route, Switch, Redirect } from 'react-router'
 import createBrowserHistory from 'history/createBrowserHistory'
 import { Provider } from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
-// import Loadable from 'react-loadable'
 
-// const styles = require('./style.less')
-
-import Team from 'router/team-page'
-// const Home = Loadable({
-//   loader: () => import('components/pages/home-page'),
-//   loading
-// })
+import Team from './team'
 
 export default ({ store }) => (
   <Provider {...store} store={store}>

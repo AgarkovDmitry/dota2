@@ -9,5 +9,6 @@
   font-family: PT_Sans;
   border-radius: 30px;
   outline: none;
-  width: 85%;
+  width: calc(85% - 4px);
+  line-height: 26px;
 }

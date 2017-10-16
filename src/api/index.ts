@@ -8,5 +8,8 @@ export default {
   fetchPlayers: () => axios.get(`${hostUrl}/proPlayers`).then(res => res.data),
   fetchTeams: () => axios.get(`${hostUrl}/teams`).then(res => res.data),
   fetchProMatches: (id?: number) => axios.get(`${hostUrl}/proMatches${id ? `?less_than_match_id=${id}` : ''}`).then(res => res.data),
-  fetchMatchInfo: (id: number) => axios.get(`${hostUrl}/matches/${id}`).then(res => res.data)
+  fetchMatchInfo: (id: number) => axios.get(`${hostUrl}/matches/${id}`).then(res => res.data),
+
+
+  fetchTeamMatches: (id: number) => axios.get(`${hostUrl}/teams/${id}/matches`).then(res => res.data)
 }

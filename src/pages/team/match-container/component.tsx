@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { observable, action, computed } from 'mobx'
+import { observable, action } from 'mobx'
 
 import Match from 'store/types/match'
 import Store from 'store'
@@ -16,29 +16,23 @@ export default class MatchContainer extends React.Component<Props, null>{
 
   @action collapse = () => this.isCollapsed = !this.isCollapsed
 
-  @computed get team() {
-    return this.props.store.localStore.team
-  }
-
-  @computed get match() {
-    return this.props.match
-  }
-
   render() {
+    const match = this.props.match
+    const team = this.props.store.localStore.team
     return (
-      <div className={this.match.winnerTeam.id == this.team ? styles.win : styles.loss}>
+      <div className={match.winnerTeam == team ? styles.win : styles.loss}>
         <div onClick={this.collapse} className={styles.clickable}>
-          <div>{this.match.league.name}</div>
+          <div>{match.league.name}</div>
           <div className={styles.infoContainer}>
             <div className={styles.teamContainer}>
-              <div>{this.match.radiantTeam.name}</div>
+              <div>{match.radiantTeam.name}</div>
             </div>
             <div className={styles.titleContainer}>
-              <div>{this.match.duration.toLocaleTimeString()}</div>
-              <div>{this.match.onsetTime.toLocaleDateString()}</div>
+              <div>{match.duration.toLocaleTimeString()}</div>
+              <div>{match.onsetTime.toLocaleDateString()}</div>
             </div>
             <div className={styles.teamContainer}>
-              <div>{this.match.direTeam.name}</div>
+              <div>{match.direTeam.name}</div>
             </div>
           </div>
         </div>
@@ -46,10 +40,10 @@ export default class MatchContainer extends React.Component<Props, null>{
           this.isCollapsed
           && <div className={styles.extraInfo}>
             <hr className={styles.divider}/>
-            <span>{this.match.radiantTeam.name}</span>
+            <span>{match.radiantTeam.name}</span>
             <div className={styles.imagesContainer}>
             {
-              this.match.radiantPicks.map(item => (
+              match.radiantPicks.map(item => (
                 <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                   <img src={item.hero.img} width={64} height={36} className={styles.image}/>
                 </a>
@@ -58,7 +52,7 @@ export default class MatchContainer extends React.Component<Props, null>{
             </div>
             <div className={styles.imagesContainer}>
             {
-              this.match.radiantBans.map(item => (
+              match.radiantBans.map(item => (
                 <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                   <img src={item.hero.img} width={64} height={36} className={styles.imageBan}/>
                 </a>
@@ -66,10 +60,10 @@ export default class MatchContainer extends React.Component<Props, null>{
             }
             </div>
             <hr className={styles.divider}/>
-            <span>{this.match.direTeam.name}</span>
+            <span>{match.direTeam.name}</span>
             <div className={styles.imagesContainer}>
             {
-              this.match.direPicks.map(item => (
+              match.direPicks.map(item => (
                 <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                   <img src={item.hero.img} width={64} height={36} className={styles.image}/>
                 </a>
@@ -78,7 +72,7 @@ export default class MatchContainer extends React.Component<Props, null>{
             </div>
             <div className={styles.imagesContainer}>
             {
-              this.match.direBans.map(item => (
+              match.direBans.map(item => (
                 <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                   <img src={item.hero.img} width={64} height={36} className={styles.imageBan}/>
                 </a>
@@ -86,7 +80,7 @@ export default class MatchContainer extends React.Component<Props, null>{
             }
             </div>
             <hr className={styles.divider}/>
-            <a href={`https://www.opendota.com/matches/${this.match.id}`} className={styles.learnMore}> Learn More </a>
+            <a href={`https://www.opendota.com/matches/${match.id}`} className={styles.learnMore}> Learn More </a>
           </div>
         }
       </div>

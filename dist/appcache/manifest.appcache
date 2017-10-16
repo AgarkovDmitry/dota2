@@ -1,0 +1,13 @@
+CACHE MANIFEST
+#ver:2017-10-16 14:17:21
+#plugin:4.8.4
+
+CACHE:
+/images/4edbf04f2fcf729957312e9cc3fc6c28.ttf
+/images/c32d69c2308cb4267b8bd6fafadddd32.png
+/app.js
+/libs.js
+/styles/bundle.css
+
+NETWORK:
+*

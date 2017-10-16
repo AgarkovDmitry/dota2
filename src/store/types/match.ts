@@ -106,12 +106,12 @@ export default class {
     this.withExtra = true
   }
 
-  teamPicks = createTransformer((id: number): Array<Pick> => {
-    return this.radiantTeam.id == id ? this.radiantPicks : this.direPicks
+  teamPicks = createTransformer((team: Team): Array<Pick> => {
+    return this.radiantTeam == team ? this.radiantPicks : this.direPicks
   })
 
-  teamDraft = createTransformer((id: number): Draft => {
-    return new Draft(this.teamPicks(id), this.id, this.winnerTeam.id == id)
+  teamDraft = createTransformer((team: Team): Draft => {
+    return new Draft(this.teamPicks(team), this.id, this.winnerTeam == team)
   })
 
   didHeroWin = createTransformer((hero: Hero): boolean => {

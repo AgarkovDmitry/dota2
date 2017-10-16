@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const OfflinePlugin = require('offline-plugin')
 
 module.exports = {
   entry: {
@@ -47,6 +48,30 @@ module.exports = {
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
+    }),
+    new OfflinePlugin({
+      safeToUseOptionalCaches: true,
+      excludes: ['./index.html'],
+      caches: {
+        main: [':rest:'],
+        additional: [':externals:'],
+        optional: []
+      },
+      externals: [
+        './dist/index.html'
+      ],
+      // ServiceWorker: {
+      //   events: true,
+      //   navigateFallbackURL: '/',
+      //   publicPath: '/sw.js'
+      // },
+      // AppCache: {
+      //   events: true,
+      //   publicPath: '/appcache',
+      //   FALLBACK: {
+      //     '/': '/'
+      //   },
+      // },
     }),
   ]
 }

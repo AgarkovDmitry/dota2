@@ -1,12 +1,18 @@
 import { render } from 'react-dom'
 
+// import registerServiceWorker from 'helpers/registerServiceWorker'
 import Store from 'store'
-import app from 'components/app'
+import router from 'pages'
+
+import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 
 declare global {
-  interface Window { store: any }
+  interface Window { store: Store }
 }
 
 const store = window.store = new Store()
 
-render(app({ store }), document.getElementById('Main'))
+render(router({ store }), document.getElementById('Main'))
+// registerServiceWorker()
+
+OfflinePluginRuntime.install()

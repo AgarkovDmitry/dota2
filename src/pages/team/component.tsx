@@ -7,18 +7,24 @@ import LocalStore from './store'
 import MatchContainer from './match-container'
 const styles = require('./style.scss')
 
-class Page extends React.Component<any, null>{
+interface Props {
+  store: any
+  match: any
+}
+
+class Page extends React.Component<Props, null>{
   componentDidMount() {
-    this.props.store.setLocalStore(LocalStore, this.props.id)
+    this.props.store.setLocalStore(LocalStore, this.props.match.params.id)
   }
 
   render() {
-    const { team, store } = this.props
+    const { store } = this.props
+    const team = store.localStore && store.localStore.team
 
     return (
       team && store.localStore
       ? <div className={styles.page}>
-        <LeftBar {...this.props}/>
+        <LeftBar team={team}/>
         <div className={styles.centralContent}>
           <h1 className={styles.centralTitle}>{team.name}({team.winRate}%)</h1>
           <svg className={styles.svgContainer}>

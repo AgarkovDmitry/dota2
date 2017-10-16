@@ -33,7 +33,7 @@ export default class HeroInfo extends React.Component<any, null>{
     let matches = this.localStore.filteredMatches
 
     return matches.filter(match => {
-      const picks = match.radiantTeam.id == this.localStore.team ? match.direBans : match.radiantBans
+      const picks = match.radiantTeam == this.localStore.team ? match.direBans : match.radiantBans
       return picks.reduce((res, a) => res || a.hero == hero, false)
     }).length
   }
