@@ -91,8 +91,6 @@ class Store{
     this._team = id
     this.heroes = []
     this.leagues = []
-
-    this.fetch()
   }
 
   @action fetch = async() => {
@@ -105,7 +103,7 @@ class Store{
     ])
     await this.data.players.load()
 
-    await this.data.matches.load(3)
+    await this.data.matches.load()
     const ids = this.data.matches.data
       .filter(item => item.direTeam && item.radiantTeam)
       .filter(item => item.direTeam == this.team || item.radiantTeam == this.team)

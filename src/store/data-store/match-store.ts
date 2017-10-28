@@ -34,7 +34,7 @@ export default class MatchStore extends CachedStore{
 
         if (res.length > 0) {
           while (res.length % 100 == 0 && index < requestsCount) {
-            let tres = await api.fetchProMatches()
+            let tres = await api.fetchProMatches(res[res.length - 1].match_id)
             tres = tres.filter(item => item.match_id > data[0].match_id)
             res.push(...tres)
             index++

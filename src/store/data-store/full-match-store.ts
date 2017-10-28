@@ -6,7 +6,7 @@ import FullMatch from '../types/full-match'
 
 export default class FullMatchStore extends CachedStore{
   @observable data: FullMatch[] = []
-  maxCount: number = 50
+  maxCount: number = 500
   getMatch: (number) => Match
   getHero: (number) => Hero
   getPlayer: (number) => Player
@@ -22,13 +22,19 @@ export default class FullMatchStore extends CachedStore{
   @action async load (ids: number[], force?: boolean) {
     let { data } = await this.readFromLocalStorage()
 
-    let responces = await Promise.all(
-      ids
-      .filter(id => !data.find(match => match.match_id == id) || force)
-      .map(id => api.fetchMatchInfo(id))
-    )
+    let promises = ids
+    .filter(id => !data.find(match => match.match_id == id) || force)
+    .map(id => api.fetchMatchInfo(id))
 
-    data.push(...responces.filter(item => !data.find(match => match.match_id == item.match_id)))
+    const benchCount = 10
+    let count = promises.length / benchCount
+
+    for (let i = 0; i < count; i++) {
+      let res = await Promise.all(promises.slice(i * benchCount, (i + 1) * benchCount))
+      data.push(...res)
+    }
+
+    data = data.filter((item, key, arr) => arr.findIndex(match => match.match_id == item.match_id) == key)
 
     this.writeToLocalStorage(data.sort((a, b) => b.start_time - a.start_time).slice(0, this.maxCount))
 

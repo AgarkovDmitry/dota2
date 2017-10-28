@@ -6,8 +6,6 @@ import { withRouter } from 'react-router'
 import Button from 'components/button'
 import TextInput from 'components/text-input'
 
-import Team from 'store/types/team'
-
 const styles = require('./style.scss')
 
 interface Props{
@@ -36,7 +34,7 @@ export default class ChooseTeamBody extends React.Component<Props, null>{
 
     return (
       <div className={styles.container}>
-        <TextInput placeholder={'Search team'} update={this.update}/>
+        <TextInput placeholder={'Search team'} update={this.update} className={styles.customInput}/>
         <ul className={styles.teams}>
           {
             teams

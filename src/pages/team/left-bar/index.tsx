@@ -44,7 +44,9 @@ export default class LeftBar extends React.Component<Props, null>{
           {
             navigator.onLine
             ? !loading
-              ? `Load more matches(${matchesLength})`
+              ? matchesLength > 0
+                ? `Load more matches(${matchesLength})`
+                : 'Load matches'
               : <Loader/>
             : 'Offline mode'
           }
