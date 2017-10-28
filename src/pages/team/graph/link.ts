@@ -1,8 +1,5 @@
 import { observable, action, computed } from 'mobx'
 
-import Draft from 'store/types/draft'
-import Hero from 'store/types/hero'
-
 const getWinRateColor = (winRate: number) => {
   if (winRate <= 0.1) return '#FF0000'
   if (winRate <= 0.2) return '#FB3700'
@@ -41,7 +38,7 @@ export default class Link {
 
   @action removeOldDrafts = (drafts: Array<Draft>, source: number, target: number) => {
     drafts.map(draft => {
-      const index = this.drafts.findIndex(item => item == draft)
+      const index = this.drafts.indexOf(draft)
       if (index > -1) this.drafts.splice(index, 1)
     })
 
@@ -52,7 +49,7 @@ export default class Link {
       this.target = target
 
       drafts.map(draft => {
-        const index = this.drafts.findIndex(item => item == draft)
+        const index = this.drafts.indexOf(draft)
         if (index > -1)
           this.drafts.splice(index, 1)
       })

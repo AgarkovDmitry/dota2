@@ -1,8 +1,5 @@
 import { observable, action, computed } from 'mobx'
 
-import Draft from 'store/types/draft'
-import Hero from 'store/types/hero'
-
 const styles = require('./style.scss')
 
 const getWinRateColor = (winRate: number) => {
@@ -46,7 +43,7 @@ export default class Node {
 
   @action removeOldDrafts = (drafts: Array<Draft>) => {
     drafts.map(draft => {
-      const index = this.drafts.findIndex(item => item == draft)
+      const index = this.drafts.indexOf(draft)
       if (index > -1)
         this.drafts.splice(index, 1)
     })

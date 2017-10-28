@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { observer } from 'mobx-react'
 import { observable, action } from 'mobx'
 
 const styles = require('./style.scss')
@@ -8,6 +9,7 @@ interface Props{
   body: any
 }
 
+@observer
 export default class MatchContainer extends React.Component<Props, null>{
   @observable isOpen: boolean = false
 

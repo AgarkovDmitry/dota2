@@ -1,5 +1,5 @@
 
-export default class {
+class _League {
   id: number
   name: string
   tier: number
@@ -10,3 +10,9 @@ export default class {
     this.tier = league.tier
   }
 }
+
+declare global{
+  class League extends _League{ }
+}
+
+export default _League

@@ -1,33 +1,41 @@
-import { observable, computed, createTransformer } from 'mobx'
+import { computed, createTransformer } from 'mobx'
 
+import Match from './match'
+import Team from './team'
 import PickBan from './pick'
 import Draft from './draft'
 
-class _Match {
-  id: number
-  duration: Date
-  onsetTime: Date
-
-  league: League
-
-  direScore: number
-  radiantScore: number
-
-  direTeam: Team
-  radiantTeam: Team
-
-  winnerTeam: Team
+class _FullMatch {
+  match: Match
 
   // @observable firstbloodTime: number
 
   // @observable radiantGoldAdv: Array<number>
   // @observable radiantExpAdv: Array<number>
 
-  @observable picksbans: Array<PickBan>
-  @observable players: any
+  picksbans: Array<PickBan>
+  players: any
   // @observable teamfights: any
 
-  @observable withExtra: boolean
+  @computed get id(): number {
+    return this.match.id
+  }
+
+  @computed get radiantTeam() {
+    return this.match.radiantTeam
+  }
+
+  @computed get direTeam() {
+    return this.match.direTeam
+  }
+
+  @computed get winnerTeam() {
+    return this.match.winnerTeam
+  }
+
+  @computed get league() {
+    return this.match.league
+  }
 
   @computed get radiantPicks() {
     if (this.picksbans)
@@ -57,33 +65,20 @@ class _Match {
       return []
   }
 
-  constructor(match, getLeague: (number) => League, getTeam: (number) => Team) {
-    // console.log(getTeam(match.dire_team_id))
-    this.id = match.match_id
-    this.duration = new Date(match.duration * 1000 - 10800000)
-    this.onsetTime = new Date(match.start_time * 1000)
+  constructor(match: Match, extra, getHero: (number) => Hero, getPlayer: (number) => Player) {
+    this.match = match
+    // this.firstbloodTime = match.first_blood_time
 
-    this.league = getLeague(match.leagueid)
+    // this.radiantGoldAdv = match.radiant_gold_adv
+    // this.radiantExpAdv = match.radiant_xp_adv
 
-    this.direScore = match.dire_score
-    this.radiantScore = match.radiant_score
-
-    this.direTeam = getTeam(match.dire_team_id)
-    this.radiantTeam = getTeam(match.radiant_team_id)
-
-    this.winnerTeam = match.radiant_win ? this.radiantTeam : this.direTeam
-
-    // this.firstbloodTime = null
-
-    // this.radiantGoldAdv = null
-    // this.radiantExpAdv = null
-
-    this.picksbans = null
-    this.players = null
-    // this.teamfights = null
-
-    this.withExtra = false
-
+    this.picksbans = extra.picks_bans.map(item =>
+      new PickBan(item, getHero, getPlayer, this.direTeam, this.radiantTeam, extra.players.find(player =>
+        player.hero_id == item.hero_id
+      ))
+    )
+    this.players = extra.players
+    // this.teamfights = match.teamfights
   }
 
   teamPicks = createTransformer((team: Team) => {
@@ -104,7 +99,7 @@ class _Match {
 }
 
 declare global {
-  class Match extends _Match { }
+  class FullMatch extends _FullMatch { }
 }
 
-export default _Match
+export default _FullMatch

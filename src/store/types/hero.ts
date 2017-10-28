@@ -1,8 +1,7 @@
 import { computed } from 'mobx'
 
-export default class Hero{
+class _Hero {
   id: number
-
   name: string
 
   icon: string
@@ -51,13 +50,12 @@ export default class Hero{
   // roles: Array<string>
   // turn_rate: number
 
-  @computed get proWinRate(): number {
+  @computed get proWinRate() {
     return parseInt((100 * this.proWins / this.proPicks).toFixed(0))
   }
 
   constructor(hero) {
     this.id = hero.hero_id
-
     this.name = hero.localized_name
 
     this.icon = 'https://api.opendota.com' + hero.icon
@@ -68,3 +66,9 @@ export default class Hero{
     this.proWins = hero.pro_win
   }
 }
+
+declare global {
+  class Hero extends _Hero { }
+}
+
+export default _Hero

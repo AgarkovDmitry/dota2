@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { observer, inject } from 'mobx-react'
 
 import Drawer from 'components/drawer'
 import Loader from 'components/loader'
@@ -7,38 +8,46 @@ import Button from 'components/button'
 import ChooseTeamBody from 'components/drawer/bodies/choose-team'
 
 import Store from 'store'
+import PageStore from '../store'
 
 const styles = require('./style.scss')
 
 interface Props{
-  store: Store
-  history: any
-  team: number
+  store?: Store
+  pageStore?: PageStore
 }
 
+@inject('pageStore', 'store')
+@observer
 export default class LeftBar extends React.Component<Props, null>{
   render() {
-    const loading = this.props.store.dataStore.loadingMatches
-    const fetchMatches = () => this.props.store.dataStore.loadMatchesWithExtras(5, false, { team: this.props.store.localStore.team.id })
-    const matchesLength = this.props.store.localStore.filteredMatches.length
-    const select = this.props.store.localStore.select
-    const availableLeagues = this.props.store.localStore.availableLeagues
-    const availableRivals = this.props.store.localStore.availableRivals
-    const leagues = this.props.store.localStore.leagues
-    const rivals = this.props.store.localStore.rivals
+    if (!this.props.pageStore) return null
+
+    const loading = this.props.pageStore.loading
+    const fetchMatches = this.props.pageStore.fetchMore
+    const matchesLength = this.props.pageStore.filteredMatches.length
+    const select = this.props.pageStore.select
+    const selectSide = this.props.pageStore.selectSide
+
+    const availableLeagues = this.props.pageStore.availableLeagues
+    const availableSides = this.props.pageStore.availableSides
+    const availableRivals = this.props.pageStore.availableRivals
+
+    const leagues = this.props.pageStore.leagues
+    const side = this.props.pageStore.side
+    const rivals = this.props.pageStore.rivals
 
     return (
-      this.props.team
-      ? <div className={styles.leftBar}>
+      <div className={styles.leftBar}>
         <div className={styles.fetchContainer}>
           <Button handleClick={fetchMatches} disabled={loading || !navigator.onLine}>
-            {
-              navigator.onLine
-              ? !loading
-                ? `Load more matches(${matchesLength})`
-                : <Loader/>
-              : 'Offline mode'
-            }
+          {
+            navigator.onLine
+            ? !loading
+              ? `Load more matches(${matchesLength})`
+              : <Loader/>
+            : 'Offline mode'
+          }
           </Button>
         </div>
 
@@ -51,6 +60,14 @@ export default class LeftBar extends React.Component<Props, null>{
               options={availableLeagues}
               selected={leagues}
               mapObject={item => item.name}
+            />
+          </div>
+          <div className={styles.filterWrap}>
+            <Select
+              handleSelect={item => selectSide(item)}
+              name={'Side'}
+              options={availableSides}
+              selected={[side]}
             />
           </div>
           <div className={styles.filterWrap}>
@@ -76,7 +93,6 @@ export default class LeftBar extends React.Component<Props, null>{
           />
         </div>
       </div>
-      : null
     )
   }
 }

@@ -1,14 +1,16 @@
 import * as React from 'react'
+import { observer } from 'mobx-react'
 
 const styles = require('./style.scss')
 
 interface Props{
   handleClick: Function
-  children: string
+  children: any
   disabled?: boolean
   className?: string
 }
 
+@observer
 export default class Button extends React.Component<Props, null>{
   render() {
     return (

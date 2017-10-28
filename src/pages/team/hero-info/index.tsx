@@ -1,39 +1,36 @@
 import * as React from 'react'
+import { observer, inject } from 'mobx-react'
 import { computed } from 'mobx'
-
-import Hero from 'store/types/hero'
-import LocalStore from '../store'
-import DataStore from 'store/data-store'
 
 const styles = require('./style.scss')
 
-export default class HeroInfo extends React.Component<any, null>{
-  @computed get localStore(): LocalStore {
-    return this.props.store.localStore
-  }
+interface Props{
+  team?: Team
+  heroes?: Hero[]
+  matches?: FullMatch[]
+}
 
-  @computed get data(): DataStore {
-    return this.props.store.dataStore
-  }
-
-  @computed get winRate(): number {
+@inject(({ pageStore }) => ({ heroes: pageStore.heroes, matches: pageStore.filteredMatches, team: pageStore.team }))
+@observer
+export default class HeroInfo extends React.Component<Props, null>{
+  @computed get winRate() {
     return this.picks ? parseInt((100 * this.wins / this.picks).toFixed(0)) : 0
   }
 
-  @computed get picks(): number {
+  @computed get picks() {
     return this.heroStat.reduce((res, a) => res + a.picks, 0)
   }
 
-  @computed get wins(): number {
+  @computed get wins() {
     return this.heroStat.reduce((res, a) => res + a.wins, 0)
   }
 
-  @computed get bans (): number {
-    const hero = this.localStore.heroes[0]
-    let matches = this.localStore.filteredMatches
+  @computed get bans () {
+    const hero = this.props.heroes[0]
+    let matches = this.props.matches
 
     return matches.filter(match => {
-      const picks = match.radiantTeam == this.localStore.team ? match.direBans : match.radiantBans
+      const picks = match.radiantTeam == this.props.team ? match.direBans : match.radiantBans
       return picks.reduce((res, a) => res || a.hero == hero, false)
     }).length
   }
@@ -42,8 +39,8 @@ export default class HeroInfo extends React.Component<any, null>{
     if (!this.hero)
       return []
 
-    let picks = this.localStore.filteredMatches.map(match => {
-      const pick = match.teamPicks(this.localStore.team).find(pick => pick.hero == this.hero)
+    let picks = this.props.matches.map(match => {
+      const pick = match.teamPicks(this.props.team).find(pick => pick.hero == this.hero)
       return { player: pick.player, win: match.didHeroWin(this.hero) }
     })
 
@@ -55,12 +52,12 @@ export default class HeroInfo extends React.Component<any, null>{
       .map(player =>
         picks.reduce((res, pick) =>
           pick.player == player ? { ...res, wins: res.wins + +pick.win, picks: res.picks + 1 } : res,
-          { player, wins: 0, picks: 0, isActual: player && player.team && player.team.id == this.localStore.team })
+          { player, wins: 0, picks: 0, isActual: player && player.team && player.team.id == this.props.team })
       )
   }
 
-  @computed get hero(): Hero {
-    return this.localStore.heroes.length == 1 ? this.localStore.heroes[0] : null
+  @computed get hero() {
+    return this.props.heroes.length == 1 ? this.props.heroes[0] : null
   }
 
   render () {

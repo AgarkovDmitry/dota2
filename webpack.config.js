@@ -13,8 +13,7 @@ module.exports = {
      'react',
      'react-dom',
      'mobx',
-     'mobx-react',
-     'recompose'
+     'mobx-react'
    ],
  },
  output: {
@@ -26,7 +25,13 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.(ts|tsx)?$/, loader: 'awesome-typescript-loader' },
-      { test: /\.s?css$/, loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader?modules', 'sass-loader'] }) },
+      { test: /\.s?css$/, loader: ExtractTextPlugin.extract({ 
+        fallback: 'style-loader',
+        use: [
+          'css-loader?modules',
+          'sass-loader',
+        ]
+      }) },
       { test: /\.(jpg|svg|png|ttf)$/, loader: 'file-loader?&name=images/[hash].[ext]' },
     ]
   },

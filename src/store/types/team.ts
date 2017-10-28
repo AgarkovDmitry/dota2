@@ -1,6 +1,6 @@
 import { computed } from 'mobx'
 
-export default class {
+class _Team {
   id: number
   tag: string
   name: string
@@ -21,3 +21,9 @@ export default class {
     this.rating = team.rating
   }
 }
+
+declare global {
+  class Team extends _Team { }
+}
+
+export default _Team

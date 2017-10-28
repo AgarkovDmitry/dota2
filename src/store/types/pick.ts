@@ -1,8 +1,4 @@
-import Hero from './hero'
-import Team from './team'
-import Player from './player'
-
-export default class Pick{
+class _Pick {
   isPick: boolean
   order: number
   hero: Hero
@@ -17,3 +13,9 @@ export default class Pick{
     this.player = player ? getPlayer(player.account_id) : null
   }
 }
+
+declare global {
+  class PickBan extends _Pick{}
+}
+
+export default _Pick

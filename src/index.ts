@@ -7,12 +7,11 @@ import router from 'pages'
 import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 
 declare global {
-  interface Window { store: Store }
+  interface Window { store: Store, pageStore: any }
 }
 
 const store = window.store = new Store()
 
 render(router({ store }), document.getElementById('Main'))
-// registerServiceWorker()
 
 OfflinePluginRuntime.install()
