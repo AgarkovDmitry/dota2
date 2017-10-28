@@ -105,7 +105,7 @@ class Store{
     ])
     await this.data.players.load()
 
-    await this.data.matches.load()
+    await this.data.matches.load(3)
     const ids = this.data.matches.data
       .filter(item => item.direTeam && item.radiantTeam)
       .filter(item => item.direTeam == this.team || item.radiantTeam == this.team)

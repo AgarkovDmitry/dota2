@@ -18,8 +18,8 @@ interface Props{
 }
 
 @inject(({ store, pageStore }) => ({ teams: store.dataStore.teams.data, setTeam: pageStore.setTeam }))
-@observer
 @withRouter
+@observer
 export default class ChooseTeamBody extends React.Component<Props, null>{
   @observable filter: string = ''
 
