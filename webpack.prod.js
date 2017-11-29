@@ -23,7 +23,7 @@ config.plugins = [
        booleans: true,
     }
   }),
-  new webpack.optimize.ModuleConcatenationPlugin(),
+  new webpack.optimize.ModuleConcatenationPlugin()
 ]
 
 module.exports = config

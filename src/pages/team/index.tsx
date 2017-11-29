@@ -14,13 +14,13 @@ import HeroInfo from './hero-info'
 const styles = require('./style.scss')
 
 interface Props {
-  store: Store
-  match: any
+  store?: Store
+  match?: any
 }
 
+@withRouter
 @inject('store')
 @observer
-@withRouter
 class Page extends React.Component<Props, null>{
   render() {
     const { store } = this.props

@@ -45,6 +45,7 @@ export default class FullMatchStore extends CachedStore{
       ...data
       .filter(res => this.data.indexOf(res) == -1)
       .filter(res => this.getMatch(res.match_id))
+      .filter(res => res.picks_bans)
       .map(res => new FullMatch(this.getMatch(res.match_id), res, this.getHero, this.getPlayer))
     )
   }

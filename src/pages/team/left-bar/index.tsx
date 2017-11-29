@@ -17,6 +17,12 @@ interface Props{
   pageStore?: PageStore
 }
 
+const Trigger = ({ open }) => (
+  <Button handleClick={open}>
+    Select another team
+  </Button>
+)
+
 @inject('pageStore', 'store')
 @observer
 export default class LeftBar extends React.Component<Props, null>{
@@ -86,11 +92,7 @@ export default class LeftBar extends React.Component<Props, null>{
 
         <div className={styles.teamContainer}>
           <Drawer
-            trigger={
-              ({ open }) => <Button handleClick={open}>
-                  Select another team
-              </Button>
-            }
+            trigger={Trigger}
             body={ChooseTeamBody}
           />
         </div>

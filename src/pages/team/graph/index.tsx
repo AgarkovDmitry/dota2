@@ -325,7 +325,7 @@ export default class Graph extends React.Component<Props, null>{
     this.drafts = this.props.drafts
 
     this.mergeNodes(oldDrafts, newDrafts, this.props.select, this.props.heroes, {
-      mPicks: 1,
+      mPicks: 0,
       lPicks: null,
       mWinRate: null,
       lWinRate: null,

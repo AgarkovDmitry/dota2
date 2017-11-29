@@ -7,6 +7,9 @@ const OfflinePlugin = require('offline-plugin')
 module.exports = {
   entry: {
    app: [
+    // 'react-hot-loader/patch',
+    // 'webpack-dev-server/client?http://localhost:3000',
+    // 'webpack/hot/only-dev-server',
      path.join(__dirname, './src/')
    ],
    libs: [
@@ -24,7 +27,10 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.(ts|tsx)?$/, loader: 'awesome-typescript-loader' },
+      { test: /\.(ts|tsx)?$/, loaders: [
+          // "react-hot-loader/webpack",
+          "awesome-typescript-loader"
+      ] },
       { test: /\.s?css$/, loader: ExtractTextPlugin.extract({ 
         fallback: 'style-loader',
         use: [
@@ -39,12 +45,15 @@ module.exports = {
     modules: ['node_modules', 'src'],
     extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
-  devServer: {
-    contentBase: './dist',
-    historyApiFallback: true,
-    hot: true,
-    publicPath: '/'
-  },
+  // devServer: {
+  //   contentBase: './dist',
+  //   publicPath: '/',
+  //   port: 3000,
+
+  //   inline: true,
+  //   historyApiFallback: true,
+  //   stats: 'normal',
+  // },
   plugins: [
     new ExtractTextPlugin('styles/bundle.css'),
     new webpack.optimize.CommonsChunkPlugin({ name: 'libs' }),
@@ -54,19 +63,19 @@ module.exports = {
       minimize: true,
       debug: false
     }),
-    new OfflinePlugin({
-      publicPath: '/',
-      externals: [
-        '/'
-      ],
-      ServiceWorker: {
-        navigateFallbackURL: '/'
-      },
-      caches: {
-        main: [':rest:'],
-        additional: [':externals:'],
-        optional: []
-      },
-    }),
+    // new OfflinePlugin({
+    //   publicPath: '/',
+    //   externals: [
+    //     '/'
+    //   ],
+    //   ServiceWorker: {
+    //     navigateFallbackURL: '/'
+    //   },
+    //   caches: {
+    //     main: [':rest:'],
+    //     additional: [':externals:'],
+    //     optional: []
+    //   },
+    // }),
   ]
 }

@@ -42,7 +42,7 @@ export default class MatchContainer extends React.Component<Props, null>{
           <span>{match.radiantTeam.name}</span>
           <div className={styles.imagesContainer}>
           {
-            match.radiantPicks.map(item => (
+            match.radiantPicks.filter((item, key) => key < 5).map(item => (
               <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                 <img src={item.hero.img} width={64} height={36} className={styles.image}/>
               </a>
@@ -51,7 +51,7 @@ export default class MatchContainer extends React.Component<Props, null>{
           </div>
           <div className={styles.imagesContainer}>
           {
-            match.radiantBans.map(item => (
+            match.radiantBans.filter((item, key) => key < 5).map(item => (
               <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                 <img src={item.hero.img} width={64} height={36} className={styles.imageBan}/>
               </a>
@@ -62,7 +62,7 @@ export default class MatchContainer extends React.Component<Props, null>{
           <span>{match.direTeam.name}</span>
           <div className={styles.imagesContainer}>
           {
-            match.direPicks.map(item => (
+            match.direPicks.filter((item, key) => key < 5).map(item => (
               <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                 <img src={item.hero.img} width={64} height={36} className={styles.image}/>
               </a>
@@ -71,7 +71,7 @@ export default class MatchContainer extends React.Component<Props, null>{
           </div>
           <div className={styles.imagesContainer}>
           {
-            match.direBans.map(item => (
+            match.direBans.filter((item, key) => key < 5).map(item => (
               <a href={`https://www.opendota.com/heroes/${item.hero.id}`} key={item.hero.id}>
                 <img src={item.hero.img} width={64} height={36} className={styles.imageBan}/>
               </a>
